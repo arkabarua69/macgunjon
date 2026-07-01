@@ -4,8 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV DJANGO_SETTINGS_MODULE=macgunjon.settings
 ENV GUNICORN_WORKERS=4
-ENV SECRET_KEY=build-time-key-do-not-use-in-production
-
+ENV SECRET_KEY=37i$3+kmsm7u-&*n5=8xahi%wtbyp^@jgcnqy4=)1$y(#mt&$g
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
