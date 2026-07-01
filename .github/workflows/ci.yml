@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      SECRET_KEY: 37i$3+kmsm7u-&*n5=8xahi%wtbyp^@jgcnqy4=)1$y(#mt&$g
+      SECRET_KEY: ci-test-secret-key-not-for-production
       DEBUG: 'True'
       DB_ENGINE: django.db.backends.postgresql
       DB_NAME: macgunjon
@@ -61,16 +61,3 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t macgunjon:${{ github.sha }} .
-
-      - name: Log in to Docker Hub
-        if: github.ref == 'refs/heads/main'
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Push to Docker Hub
-        if: github.ref == 'refs/heads/main'
-        run: |
-          docker tag macgunjon:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/macgunjon:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/macgunjon:latest
