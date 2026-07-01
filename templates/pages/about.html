@@ -1,0 +1,370 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us — Mac GunJon{% endblock %}
+
+{% block content %}
+
+<style>
+  #about-page .section { padding: clamp(0.5rem, 0.8vw, 1rem) 0; }
+  #about-page .section.eco-section { padding: clamp(1.5rem, 2vw, 2.5rem) 0; }
+</style>
+
+<div id="about-page">
+
+<!-- ========== ABOUT HERO ========== -->
+<section class="home-hero" style="padding:clamp(5rem,5vw,6rem) 0 clamp(3rem,3vw,4rem);">
+  <canvas id="canvas-particles"></canvas>
+  <div class="container">
+    <div class="r-grid-2 pos-relative z-1">
+
+      <!-- Left: Text -->
+      <div>
+        <div class="hero-chip d-inline-flex" data-aos="fade-up">
+          <i data-lucide="info" class="ic-14"></i>
+          About Us
+        </div>
+        <h1 class="hero-title mt-16" style="font-size:clamp(1.8rem,3.5vw,2.6rem);" data-aos="fade-up" data-aos-delay="100">
+          About <span class="hero-title-grad">{{ site_settings.site_name|default:"Mac GunJon" }}</span>
+        </h1>
+        <p class="hero-desc" style="margin:12px 0 0;max-width:440px;" data-aos="fade-up" data-aos-delay="200">
+          Your trusted source for premium digital products &amp; automation solutions.
+        </p>
+      </div>
+
+      <!-- Right: Mini Eco System -->
+      <div data-aos="fade-up" data-aos-delay="150">
+        <div class="store-eco-grid">
+          <div class="store-eco-col">
+            <div class="store-eco-card" data-color="#3b82f6">
+              <div class="store-eco-ic" style="background:#dbeafe;color:#3b82f6;"><i data-lucide="target" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Our Mission</h5><p>Digital tools for all</p></div>
+            </div>
+            <div class="store-eco-card" data-color="#10b981">
+              <div class="store-eco-ic" style="background:#d1fae5;color:#10b981;"><i data-lucide="shield-check" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Trusted</h5><p>Secure & reliable</p></div>
+            </div>
+          </div>
+          <div class="store-eco-col store-eco-col-r">
+            <div class="store-eco-card" data-color="#d946ef">
+              <div class="store-eco-ic" style="background:#fce7f3;color:#d946ef;"><i data-lucide="zap" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Innovation</h5><p>AI-powered solutions</p></div>
+            </div>
+            <div class="store-eco-card" data-color="#f97316">
+              <div class="store-eco-ic" style="background:#fff7ed;color:#f97316;"><i data-lucide="users" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Community</h5><p>1K+ happy customers</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========== STORY + STATS ========== -->
+<section class="section" style="padding-bottom:0;">
+  <div class="container max-w-900">
+
+    <div class="r-grid-2 mb-48" data-aos="fade-up">
+      <div>
+        <span class="fs-7 fw-7 ls-1 text-primary d-block text-uppercase mb-8">Our Story</span>
+        <h2 class="fw-8 lh-12 mb-16" style="font-size:1.6rem;">{% if site_settings.about_story_title %}{{ site_settings.about_story_title }}{% else %}Built for the <span class="text-gradient-primary">digital age</span>{% endif %}</h2>
+
+        <p class="text-secondary" style="font-size:.92rem;line-height:1.7;">{{ site_settings.about_story_text|default:"From automation bots that streamline your workflow to stunning website templates that establish your online presence, every product in our catalog is carefully curated and tested." }}</p>
+      </div>
+      <div class="radius-xl d-flex ai-center jc-center" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);padding:48px;min-height:260px;">
+        <i data-lucide="bot" class="opacity-50 text-primary" style="width:96px;height:96px;"></i>
+      </div>
+    </div>
+
+    <div class="r-grid-stats mb-48" data-aos="fade-up">
+      {% for stat in stats %}
+      <div class="stat-item text-center bg-alt radius-lg stat-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'1' }}00">
+        <div class="fw-8 text-gradient-primary mb-4" style="font-size:1.8rem;">{{ stat.value }}</div>
+        <div class="fs-78 text-muted fw-5">{{ stat.label }}</div>
+      </div>
+      {% empty %}
+      <div class="stat-item text-center bg-alt radius-lg stat-card">
+        <div class="fw-8 text-gradient-primary mb-4" style="font-size:1.8rem;">50+</div>
+        <div class="fs-78 text-muted fw-5">Products</div>
+      </div>
+      <div class="stat-item text-center bg-alt radius-lg stat-card">
+        <div class="fw-8 text-gradient-primary mb-4" style="font-size:1.8rem;">1K+</div>
+        <div class="fs-78 text-muted fw-5">Happy Customers</div>
+      </div>
+      <div class="stat-item text-center bg-alt radius-lg stat-card">
+        <div class="fw-8 text-gradient-primary mb-4" style="font-size:1.8rem;">99%</div>
+        <div class="fs-78 text-muted fw-5">Uptime</div>
+      </div>
+      <div class="stat-item text-center bg-alt radius-lg stat-card">
+        <div class="fw-8 text-gradient-primary mb-4" style="font-size:1.8rem;">24/7</div>
+        <div class="fs-78 text-muted fw-5">Support</div>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+<!-- ========== ECO ABOUT ========== -->
+<section class="eco-section section" id="ecosystem" style="padding:clamp(4rem,5vw,6rem) 0;">
+  <div class="eco-pattern"></div>
+  <div class="container">
+    <div class="eco-inner">
+
+      <div class="text-center" data-aos="fade-up">
+        <span class="eco-chip d-inline-flex">
+          <i data-lucide="heart" style="width:13px;height:13px;"></i>
+          Who We Are
+        </span>
+        <h2 class="eco-heading">
+          Our <strong>Story &amp; Values</strong>
+        </h2>
+
+      </div>
+
+      <div class="eco-grid" style="margin-top:60px;">
+        <svg class="eco-svg" id="aboutEcoSvg"></svg>
+
+        <!-- Left Cards -->
+        <div class="eco-side eco-side-l">
+          {% for card in ecosystem_left %}
+          <div class="eco-card eco-card-{{ forloop.counter }}" data-color="{{ card.color|default:'#3b82f6' }}">
+            <div class="eco-card-ic" style="background:{{ card.color|default:'#3b82f6' }}20;color:{{ card.color|default:'#3b82f6' }};"><i data-lucide="{{ card.icon|default:'target' }}"></i></div>
+            <div class="eco-card-tx"><h5>{{ card.title }}</h5><p>{{ card.description }}</p></div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Center Hub -->
+        <div class="eco-center">
+          <div class="eco-hub" id="aboutEcoHub">
+            <div class="eco-hub-core"><i data-lucide="bot"></i></div>
+            <div class="eco-hub-glow"></div>
+            <div class="eco-hub-lbl"><strong>Mac GunJon</strong><span>Is Bot</span></div>
+          </div>
+        </div>
+
+        <!-- Right Cards -->
+        <div class="eco-side eco-side-r">
+          {% for card in ecosystem_right %}
+          <div class="eco-card eco-card-{{ forloop.counter|add:'4' }}" data-color="{{ card.color|default:'#3b82f6' }}">
+            <div class="eco-card-ic" style="background:{{ card.color|default:'#3b82f6' }}20;color:{{ card.color|default:'#3b82f6' }};"><i data-lucide="{{ card.icon|default:'clock' }}"></i></div>
+            <div class="eco-card-tx"><h5>{{ card.title }}</h5><p>{{ card.description }}</p></div>
+          </div>
+          {% endfor %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== MISSION ========== -->
+<section class="section">
+  <div class="container max-w-900">
+    <div class="mission-card radius-xl" style="background:linear-gradient(135deg,#eff6ff,#f0f4ff);border:1px solid rgba(37,99,235,0.1);padding:48px;margin-bottom:48px;" data-aos="fade-up">
+      <div class="d-flex ai-center gap-14 mb-24">
+        <div class="radius bg-primary text-white d-flex ai-center jc-center flex-shrink-0" style="width:44px;height:44px;box-shadow:0 4px 12px rgba(37,99,235,0.25);">
+          <i data-lucide="target" class="ic-22"></i>
+        </div>
+        <div>
+          <h5 class="fw-7 m-0" style="font-size:1.05rem;">Our Mission</h5>
+          <span class="fs-78 text-muted">What drives us every day</span>
+        </div>
+      </div>
+      <p class="text-secondary mb-24" style="font-size:.92rem;line-height:1.8;">{{ site_settings.about_mission_text|default:"To democratize access to premium digital tools and automation solutions, enabling businesses of all sizes to compete in the digital economy. We are committed to:" }}</p>
+      <div class="r-grid-2-sm">
+        {% for point in site_settings.about_mission_points %}
+        <div class="mission-check-item d-flex ai-center gap-10 fs-85 radius" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'1' }}00" style="color:var(--text);padding:8px 12px;background:rgba(255,255,255,0.6);">
+          <i data-lucide="check-circle" class="ic-18 flex-shrink-0 text-success"></i> {{ point }}
+        </div>
+        {% empty %}
+        <div class="mission-check-item d-flex ai-center gap-10 fs-85 radius" style="color:var(--text);padding:8px 12px;background:rgba(255,255,255,0.6);">
+          <i data-lucide="check-circle" class="ic-18 flex-shrink-0 text-success"></i> Instant, high-quality digital products
+        </div>
+        <div class="mission-check-item d-flex ai-center gap-10 fs-85 radius" style="color:var(--text);padding:8px 12px;background:rgba(255,255,255,0.6);">
+          <i data-lucide="check-circle" class="ic-18 flex-shrink-0 text-success"></i> Exceptional customer support
+        </div>
+        <div class="mission-check-item d-flex ai-center gap-10 fs-85 radius" style="color:var(--text);padding:8px 12px;background:rgba(255,255,255,0.6);">
+          <i data-lucide="check-circle" class="ic-18 flex-shrink-0 text-success"></i> Continuous innovation &amp; improvement
+        </div>
+        <div class="mission-check-item d-flex ai-center gap-10 fs-85 radius" style="color:var(--text);padding:8px 12px;background:rgba(255,255,255,0.6);">
+          <i data-lucide="check-circle" class="ic-18 flex-shrink-0 text-success"></i> Secure hassle-free payments
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== TIMELINE ========== -->
+<section class="section">
+  <div class="container max-w-900">
+    <div class="mb-48" data-aos="fade-up">
+      <h5 class="fw-7 d-flex ai-center gap-8 mb-24">
+        <i data-lucide="clock" class="ic-18 text-primary"></i> <span class="text-gradient-primary">Our Journey</span>
+      </h5>
+      <div class="r-grid-2-md">
+        {% for entry in timeline %}
+        <div class="timeline-card bg-alt radius-lg card-bordered" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'1' }}00">
+          <div class="tl-icon"><i data-lucide="{{ entry.icon|default:'clock' }}" class="ic-14"></i></div>
+          <span class="fs-65 fw-7 ls-1 text-primary text-uppercase">{{ entry.year }}</span>
+          <h6 class="fw-7 fs-9" style="margin:8px 0 4px;">{{ entry.title }}</h6>
+          <p class="fs-8 text-secondary m-0">{{ entry.description }}</p>
+        </div>
+        {% empty %}
+        <div class="timeline-card bg-alt radius-lg card-bordered">
+          <div class="tl-icon"><i data-lucide="rocket" class="ic-14"></i></div>
+          <span class="fs-65 fw-7 ls-1 text-primary text-uppercase">2024</span>
+          <h6 class="fw-7 fs-9" style="margin:8px 0 4px;">Platform Launch</h6>
+          <p class="fs-8 text-secondary m-0">Mac GunJon launched with a curated selection of digital products and automation tools.</p>
+        </div>
+        <div class="timeline-card bg-alt radius-lg card-bordered">
+          <div class="tl-icon"><i data-lucide="bot" class="ic-14"></i></div>
+          <span class="fs-65 fw-7 ls-1 text-primary text-uppercase">2025</span>
+          <h6 class="fw-7 fs-9" style="margin:8px 0 4px;">AI Assistant</h6>
+          <p class="fs-8 text-secondary m-0">Introduced our AI-powered chatbot assistant for 24/7 customer support.</p>
+        </div>
+        <div class="timeline-card bg-alt radius-lg card-bordered">
+          <div class="tl-icon"><i data-lucide="users" class="ic-14"></i></div>
+          <span class="fs-65 fw-7 ls-1 text-primary text-uppercase">2025</span>
+          <h6 class="fw-7 fs-9" style="margin:8px 0 4px;">1,000 Customers</h6>
+          <p class="fs-8 text-secondary m-0">Reached the milestone of 1,000 happy customers across UK and US markets.</p>
+        </div>
+        <div class="timeline-card bg-alt radius-lg card-bordered">
+          <div class="tl-icon"><i data-lucide="globe" class="ic-14"></i></div>
+          <span class="fs-65 fw-7 ls-1 text-primary text-uppercase">2026</span>
+          <h6 class="fw-7 fs-9" style="margin:8px 0 4px;">Global Expansion</h6>
+          <p class="fs-8 text-secondary m-0">Expanded product catalog and introduced multi-currency support.</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ========== WHY CHOOSE US ========== -->
+<section class="section">
+  <div class="container max-w-900">
+    <div class="mb-48" data-aos="fade-up">
+      <h5 class="fw-7 d-flex ai-center gap-8 mb-20">
+        <i data-lucide="handshake" class="ic-18 text-primary"></i> <span class="text-gradient-primary">Why Choose Us</span>
+      </h5>
+      <div class="r-grid-2-md">
+        <div class="why-card bg-alt radius-lg card-bordered" data-aos="fade-up" data-aos-delay="50">
+          <div class="why-card-icon radius bg-primary-50 text-primary d-flex ai-center jc-center" style="width:38px;height:38px;">
+            <i data-lucide="zap" class="ic-18"></i>
+          </div>
+          <h6 class="fw-7 mb-4">Instant Delivery</h6>
+          <p class="fs-82 text-secondary m-0">Get your products immediately after purchase.</p>
+        </div>
+        <div class="why-card bg-alt radius-lg card-bordered" data-aos="fade-up" data-aos-delay="100">
+          <div class="why-card-icon radius bg-primary-50 text-primary d-flex ai-center jc-center" style="width:38px;height:38px;">
+            <i data-lucide="shield" class="ic-18"></i>
+          </div>
+          <h6 class="fw-7 mb-4">Secure Payments</h6>
+          <p class="fs-82 text-secondary m-0">Powered by Stripe for safe transactions.</p>
+        </div>
+        <div class="why-card bg-alt radius-lg card-bordered" data-aos="fade-up" data-aos-delay="150">
+          <div class="why-card-icon radius bg-primary-50 text-primary d-flex ai-center jc-center" style="width:38px;height:38px;">
+            <i data-lucide="headphones" class="ic-18"></i>
+          </div>
+          <h6 class="fw-7 mb-4">24/7 Support</h6>
+          <p class="fs-82 text-secondary m-0">Our AI assistant is always here to help.</p>
+        </div>
+        <div class="why-card bg-alt radius-lg card-bordered" data-aos="fade-up" data-aos-delay="200">
+          <div class="why-card-icon radius bg-primary-50 text-primary d-flex ai-center jc-center" style="width:38px;height:38px;">
+            <i data-lucide="refresh-cw" class="ic-18"></i>
+          </div>
+          <h6 class="fw-7 mb-4">Free Updates</h6>
+          <p class="fs-82 text-secondary m-0">Lifetime access to product updates.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CTA ========== -->
+<section class="section" style="padding-bottom:var(--space-12);">
+    <div class="container text-center max-w-700" data-aos="fade-up">
+    <div class="radius-xl text-white" style="background:linear-gradient(135deg,#1d4ed8,#3b82f6);padding:48px 40px;">
+      <h3 class="fw-8 mb-8" style="font-size:1.3rem;">Ready to get started?</h3>
+      <p class="opacity-85 mb-24" style="font-size:.92rem;">Browse our catalog and find the perfect digital solution for your needs.</p>
+      <a href="{% url 'products:product_list' %}" class="d-inline-flex ai-center gap-8 fw-7 radius-full text-deco-none fs-9 bg-white transition-all" style="color:#1d4ed8;padding:12px 28px;">
+        Browse Products <i data-lucide="arrow-right" class="ic-16"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var svg = document.getElementById('aboutEcoSvg');
+  var hub = document.getElementById('aboutEcoHub');
+  if (!svg || !hub) return;
+
+  var W = 640, H = 520;
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  svg.style.width = '100%';
+  svg.style.height = '100%';
+
+  var ns = 'http://www.w3.org/2000/svg';
+  var cards = document.querySelectorAll('.eco-card');
+
+  var cx = W / 2, cy = H / 2;
+
+  function getCardCenter(card) {
+    var idx = Array.from(cards).indexOf(card);
+    var side = idx < 4 ? 'l' : 'r';
+    var pos = idx < 4 ? idx : idx - 4;
+    var total = 4;
+    var gap = H / (total + 1);
+    var y = gap * (pos + 1);
+    var x = side === 'l' ? 140 : W - 140;
+    return { x: x, y: y };
+  }
+
+  cards.forEach(function(card) {
+    var pos = getCardCenter(card);
+    var g = document.createElementNS(ns, 'g');
+    g.setAttribute('class', 'eco-line-g');
+
+    var line = document.createElementNS(ns, 'line');
+    line.setAttribute('class', 'eco-line');
+    line.setAttribute('x1', pos.x);
+    line.setAttribute('y1', pos.y);
+    line.setAttribute('x2', cx);
+    line.setAttribute('y2', cy);
+    line.setAttribute('stroke', '#cbd5e1');
+    line.setAttribute('stroke-width', '1.5');
+    line.setAttribute('stroke-dasharray', '6,4');
+
+    var dot = document.createElementNS(ns, 'circle');
+    dot.setAttribute('class', 'eco-dot');
+    dot.setAttribute('cx', pos.x);
+    dot.setAttribute('cy', pos.y);
+    dot.setAttribute('r', '3');
+    dot.setAttribute('fill', '#3b82f6');
+
+    g.appendChild(line);
+    g.appendChild(dot);
+    svg.appendChild(g);
+
+    card.addEventListener('mouseenter', function() {
+      g.classList.add('eco-line-active');
+    });
+    card.addEventListener('mouseleave', function() {
+      g.classList.remove('eco-line-active');
+    });
+  });
+});
+</script>
+{% endblock %}

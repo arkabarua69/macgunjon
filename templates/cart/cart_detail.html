@@ -1,0 +1,284 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shopping Cart — Mac GunJon{% endblock %}
+
+{% block content %}
+
+<!-- ========== CART HERO ========== -->
+<section class="home-hero" style="padding:clamp(4rem,4vw,5rem) 0;">
+  <canvas id="canvas-particles"></canvas>
+  <div class="container">
+    <div class="r-grid-2 pos-relative z-1">
+
+      <!-- Left: Text -->
+      <div>
+        <div class="hero-chip d-inline-flex" data-aos="fade-up">
+          <i data-lucide="shopping-bag" class="ic-14"></i>
+          {% if cart %}{{ cart|length }} item{{ cart|length|pluralize }} in cart{% else %}Your Cart{% endif %}
+        </div>
+        <h1 class="hero-title mt-16" style="font-size:clamp(1.8rem,3.5vw,2.6rem);" data-aos="fade-up" data-aos-delay="100">
+          <span class="text-gradient-primary">Shopping</span> Cart
+        </h1>
+        <p class="hero-desc" style="margin:12px 0 0;max-width:440px;" data-aos="fade-up" data-aos-delay="200">
+          Review your selected digital products and proceed to secure checkout.
+        </p>
+      </div>
+
+      <!-- Right: Mini Eco System -->
+      <div data-aos="fade-up" data-aos-delay="150">
+        <div class="store-eco-grid">
+          <div class="store-eco-col">
+            <div class="store-eco-card" data-color="#3b82f6">
+              <div class="store-eco-ic eco-ic-blue"><i data-lucide="zap" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Instant Delivery</h5><p>Download immediately</p></div>
+            </div>
+            <div class="store-eco-card" data-color="#10b981">
+              <div class="store-eco-ic eco-ic-green"><i data-lucide="shield-check" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Secure Checkout</h5><p>256-bit SSL encryption</p></div>
+            </div>
+          </div>
+          <div class="store-eco-col store-eco-col-r">
+            <div class="store-eco-card" data-color="#d946ef">
+              <div class="store-eco-ic eco-ic-pink"><i data-lucide="refresh-cw" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Lifetime Access</h5><p>Buy once, use forever</p></div>
+            </div>
+            <div class="store-eco-card" data-color="#f97316">
+              <div class="store-eco-ic eco-ic-amber"><i data-lucide="headphones" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>24/7 Support</h5><p>Live chat &amp; email</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% if cart %}
+<section style="padding:clamp(2rem,4vw,4rem) 0;">
+  <div class="container">
+    <div class="cart-layout r-grid-2-narrow">
+
+      <!-- ===== CART ITEMS ===== -->
+      <div data-aos="fade-up">
+        <div class="d-flex ai-center jc-between mb-20">
+          <h3 class="fw-7 text-body m-0" style="font-size:1.1rem;">Cart Items</h3>
+          <span class="fs-8 text-muted">{{ cart|length }} product{{ cart|length|pluralize }}</span>
+        </div>
+
+        <div class="d-flex fd-column gap-14">
+          {% for item in cart %}
+          <div class="cart-item-card r-cart-item-grid bg-white border br-16 transition-all" style="padding:18px;" onmouseover="this.style.boxShadow='0 8px 30px rgba(37,99,235,0.08)';this.style.borderColor='rgba(37,99,235,0.15)'" onmouseout="this.style.boxShadow='none';this.style.borderColor='var(--border)'">
+
+            <!-- Product Image -->
+            <div class="flex-shrink-0 bg-alt overflow-hidden br-14" style="width:80px;height:80px;">
+              {% if item.product.image_url %}
+              <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" class="w-100 h-100 object-cover">
+              {% else %}
+              <div class="w-100 h-100 d-flex-center">
+                <i data-lucide="package" class="ic-28 text-muted"></i>
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Product Info -->
+            <div style="min-width:0;">
+              <a href="{{ item.product.get_absolute_url }}" class="fw-7 fs-9 text-deco-none d-block text-body text-ellipsis">{{ item.product.name }}</a>
+              <div class="mt-4">
+                <span class="d-inline-flex ai-center gap-4 fs-7 fw-6 text-primary br-20" style="padding:3px 8px;background:rgba(37,99,235,0.06);">
+                  <i data-lucide="download" class="ic-10"></i>
+                  {{ item.product.get_product_type_display }}
+                </span>
+              </div>
+              <div class="d-flex ai-center gap-12 mt-8">
+                <!-- Qty Control -->
+                <form action="{% url 'cart:cart_add' item.product.id %}" method="post" id="qtyForm{{ item.product.id }}">
+                  {% csrf_token %}
+                  <input type="hidden" name="override" value="1">
+                  <div class="d-flex ai-center overflow-hidden br-10" style="border:1.5px solid var(--border);">
+                    <button type="button" onclick="changeQty({{ item.product.id }}, -1)" class="border-none bg-alt fw-6 fs-85 d-flex-center cursor-pointer text-secondary transition-all" style="width:32px;height:32px;" onmouseover="this.style.background='var(--primary-50)';this.style.color='var(--primary)'" onmouseout="this.style.background='var(--bg-alt)';this.style.color='var(--text-secondary)'">-</button>
+                    {{ item.update_quantity_form.quantity }}
+                    <button type="button" onclick="changeQty({{ item.product.id }}, 1)" class="border-none bg-alt fw-6 fs-85 d-flex-center cursor-pointer text-secondary transition-all" style="width:32px;height:32px;" onmouseover="this.style.background='var(--primary-50)';this.style.color='var(--primary)'" onmouseout="this.style.background='var(--bg-alt)';this.style.color='var(--text-secondary)'">+</button>
+                  </div>
+                </form>
+                <!-- Price -->
+                <div>
+                  <span class="fw-8 text-body" style="font-size:1rem;">
+                    {% if request.session.currency == 'GBP' %}£{{ item.total_price_gbp }}{% else %}${{ item.total_price_usd }}{% endif %}
+                  </span>
+                  {% if item.quantity > 1 %}
+                  <span class="fs-7 text-muted d-block">
+                    {% if request.session.currency == 'GBP' %}£{{ item.price_gbp }}{% else %}${{ item.price_usd }}{% endif %} each
+                  </span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Remove -->
+            <form action="{% url 'cart:cart_remove' item.product.id %}" method="post" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" title="Remove" class="d-flex-center border-none cursor-pointer bg-transparent br-10 border-transparent text-muted transition-all" style="width:36px;height:36px;" onmouseover="this.style.background='#fef2f2';this.style.color='#dc2626';this.style.borderColor='#fecaca'" onmouseout="this.style.background='none';this.style.color='var(--text-muted)';this.style.borderColor='transparent'">
+                <i data-lucide="trash-2" class="ic-16"></i>
+              </button>
+            </form>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Continue Shopping -->
+        <div class="d-flex ai-center gap-12 mt-24">
+          <a href="{% url 'products:product_list' %}" class="d-inline-flex ai-center gap-8 fs-85 fw-6 text-deco-none text-primary br-12 transition-all" style="padding:10px 18px;border:1.5px solid var(--border);background:var(--bg);" onmouseover="this.style.borderColor='var(--primary)';this.style.background='var(--primary-50)'" onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--bg)'">
+            <i data-lucide="arrow-left" class="ic-15"></i> Continue Shopping
+          </a>
+        </div>
+      </div>
+
+      <!-- ===== ORDER SUMMARY ===== -->
+      <div data-aos="fade-up" data-aos-delay="100" style="position:sticky;top:100px;">
+        <div class="bg-white shadow-md border br-20 overflow-hidden">
+
+          <!-- Summary Header -->
+          <div style="background:linear-gradient(145deg,#2563eb,#3b82f6,#60a5fa,#3b82f6);padding:20px 24px;color:#fff;">
+            <div class="d-flex ai-center gap-10 mb-4">
+              <i data-lucide="receipt" class="ic-20"></i>
+              <span class="fw-7" style="font-size:1rem;">Order Summary</span>
+            </div>
+            <p class="fs-78 opacity-85 m-0">{{ cart|length }} digital product{{ cart|length|pluralize }} ready for instant access</p>
+          </div>
+
+          <div class="p-24">
+            <!-- Items -->
+            <div class="mb-16">
+              {% for item in cart %}
+              <div class="d-flex jc-between ai-center py-8" style="{% if not forloop.last %}border-bottom:1px solid var(--border);{% endif %}">
+                <span class="fs-82 text-secondary text-ellipsis" style="max-width:60%;">{{ item.product.name }}</span>
+                <span class="fs-82 fw-6 text-body">x{{ item.quantity }}</span>
+              </div>
+              {% endfor %}
+            </div>
+
+            <!-- Coupon Code -->
+            <div class="bg-alt mb-16 p-14 br-12">
+              <label class="fs-78 fw-6 text-secondary d-block mb-8">Have a coupon?</label>
+              <form action="{% url 'coupons:apply' %}" method="post" class="d-flex gap-8">
+                {% csrf_token %}
+                <input type="text" name="code" placeholder="Enter code" required class="fs-82 flex-1 br-10 outline-none transition-all" style="padding:10px 12px;border:1.5px solid var(--border);background:var(--bg);" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
+                <button type="submit" class="fw-6 border-none cursor-pointer bg-primary text-white br-10 transition-all" style="padding:10px 16px;font-size:.8rem;" onmouseover="this.style.background='var(--primary-dark)'" onmouseout="this.style.background='var(--primary)'">Apply</button>
+              </form>
+              {% if coupon %}
+              <div class="d-flex ai-center jc-between mt-8 br-8" style="padding:8px 10px;background:#d1fae5;">
+                <span class="fs-78 fw-6" style="color:#059669;">
+                  <i data-lucide="check-circle" class="ic-13 va-middle"></i> {{ coupon.code }} &mdash; {% if coupon.discount_type == 'percentage' %}{{ coupon.discount_value }}% off{% else %}${{ coupon.discount_value }} off{% endif %}
+                </span>
+                <a href="{% url 'coupons:remove' %}" class="fs-72 text-deco-none fw-6" style="color:#dc2626;">Remove</a>
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Delivery -->
+            <div class="d-flex jc-between ai-center py-10 border-top">
+              <span class="fs-85 text-secondary d-flex ai-center gap-6">
+                <i data-lucide="zap" class="ic-14 text-success"></i> Delivery
+              </span>
+              <span class="fs-85 fw-6 text-success">Instant & FREE</span>
+            </div>
+
+            <!-- Total -->
+            <div class="d-flex jc-between ai-center py-14 mt-8" style="border-top:2px solid var(--primary);">
+              <span class="fw-7 text-body" style="font-size:1.05rem;">Total</span>
+              <span class="fw-8 text-primary" style="font-size:1.2rem;">
+                {% if request.session.currency == 'GBP' %}£{{ cart_total_gbp }}{% else %}${{ cart_total_usd }}{% endif %}
+              </span>
+            </div>
+
+            <!-- Checkout Button -->
+            <a href="{% url 'orders:order_create' %}" class="d-flex ai-center jc-center gap-10 w-100 fw-7 fs-95 text-deco-none border-none cursor-pointer p-14 br-14 text-white transition-all mt-4" style="background:linear-gradient(145deg,#2563eb,#3b82f6,#60a5fa,#3b82f6);box-shadow:0 4px 16px rgba(37,99,235,0.25);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(37,99,235,0.35)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 16px rgba(37,99,235,0.25)'">
+              <i data-lucide="lock" class="ic-18"></i> Proceed to Checkout
+            </a>
+
+            <!-- Trust Badges -->
+            <div class="d-flex jc-center gap-16 mt-16">
+              <div class="d-flex ai-center gap-5 fs-7 text-muted">
+                <i data-lucide="shield-check" class="ic-13 text-success"></i> SSL Secure
+              </div>
+              <div class="d-flex ai-center gap-5 fs-7 text-muted">
+                <i data-lucide="credit-card" class="ic-13" style="color:#635bff;"></i> Stripe
+              </div>
+              <div class="d-flex ai-center gap-5 fs-7 text-muted">
+                <i data-lucide="download" class="ic-13 text-primary"></i> Instant
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========== FEATURES STRIP ========== -->
+<section style="padding:0 0 clamp(2rem,4vw,4rem);">
+  <div class="container">
+      <div class="cart-features-grid r-grid-4" data-aos="fade-up" data-aos-delay="200">
+      <div class="text-center bg-white border br-14 transition-all" style="padding:20px 12px;" onmouseover="this.style.borderColor='rgba(37,99,235,0.15)';this.style.boxShadow='0 4px 16px rgba(37,99,235,0.06)'" onmouseout="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
+        <div class="d-flex-center br-10 text-primary" style="width:40px;height:40px;background:linear-gradient(135deg,#dbeafe,#eff6ff);margin:0 auto 10px;"><i data-lucide="zap" class="ic-18"></i></div>
+        <h6 class="fw-7" style="font-size:.8rem;margin-bottom:2px;">Instant Delivery</h6>
+        <p class="fs-7 text-muted m-0">Download immediately</p>
+      </div>
+      <div class="text-center bg-white border br-14 transition-all" style="padding:20px 12px;" onmouseover="this.style.borderColor='rgba(37,99,235,0.15)';this.style.boxShadow='0 4px 16px rgba(37,99,235,0.06)'" onmouseout="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
+        <div class="d-flex-center br-10" style="width:40px;height:40px;background:linear-gradient(135deg,#d1fae5,#ecfdf5);color:#10b981;margin:0 auto 10px;"><i data-lucide="shield-check" class="ic-18"></i></div>
+        <h6 class="fw-7" style="font-size:.8rem;margin-bottom:2px;">Secure Payment</h6>
+        <p class="fs-7 text-muted m-0">256-bit SSL encryption</p>
+      </div>
+      <div class="text-center bg-white border br-14 transition-all" style="padding:20px 12px;" onmouseover="this.style.borderColor='rgba(37,99,235,0.15)';this.style.boxShadow='0 4px 16px rgba(37,99,235,0.06)'" onmouseout="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
+        <div class="d-flex-center br-10" style="width:40px;height:40px;background:linear-gradient(135deg,#fce7f3,#fdf4ff);color:#d946ef;margin:0 auto 10px;"><i data-lucide="refresh-cw" class="ic-18"></i></div>
+        <h6 class="fw-7" style="font-size:.8rem;margin-bottom:2px;">Lifetime Access</h6>
+        <p class="fs-7 text-muted m-0">Buy once, use forever</p>
+      </div>
+      <div class="text-center bg-white border br-14 transition-all" style="padding:20px 12px;" onmouseover="this.style.borderColor='rgba(37,99,235,0.15)';this.style.boxShadow='0 4px 16px rgba(37,99,235,0.06)'" onmouseout="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
+        <div class="d-flex-center br-10" style="width:40px;height:40px;background:linear-gradient(135deg,#fff7ed,#fef3c7);color:#f97316;margin:0 auto 10px;"><i data-lucide="headphones" class="ic-18"></i></div>
+        <h6 class="fw-7" style="font-size:.8rem;margin-bottom:2px;">24/7 Support</h6>
+        <p class="fs-7 text-muted m-0">Live chat &amp; email</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% else %}
+
+<!-- ========== EMPTY CART ========== -->
+<section style="padding:clamp(4rem,8vw,8rem) 0;">
+  <div class="container">
+    <div class="text-center mx-auto" style="max-width:420px;" data-aos="fade-up">
+      <div class="d-flex-center bg-alt br-20" style="width:80px;height:80px;margin:0 auto 20px;">
+        <i data-lucide="shopping-bag" class="ic-36 text-muted"></i>
+      </div>
+      <h2 class="fw-8 text-body mb-8" style="font-size:1.5rem;">Your cart is empty</h2>
+      <p class="fs-95 text-secondary" style="margin-bottom:28px;">Looks like you haven't added any digital products yet. Browse our store to find premium templates, bots, and tools.</p>
+      <a href="{% url 'products:product_list' %}" class="d-inline-flex ai-center gap-10 fs-95 fw-7 text-deco-none br-14 text-white transition-all" style="padding:14px 32px;background:linear-gradient(145deg,#2563eb,#3b82f6,#60a5fa,#3b82f6);box-shadow:0 4px 16px rgba(37,99,235,0.25);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(37,99,235,0.35)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 16px rgba(37,99,235,0.25)'">
+        <i data-lucide="store" class="ic-18"></i> Browse Store
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endif %}
+
+<style>
+.qty-control input[type="number"] {
+  width: 40px;
+  text-align: center;
+  border: none;
+  background: transparent;
+  font-weight: 700;
+  font-size: .85rem;
+  color: var(--text);
+  outline: none;
+  -moz-appearance: textfield;
+}
+.qty-control input[type="number"]::-webkit-outer-spin-button,
+.qty-control input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+</style>
+{% endblock %}

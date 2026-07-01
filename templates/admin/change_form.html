@@ -1,0 +1,178 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block title %}{% if errors %}Error: {% endif %}{{ block.super }}{% endblock %}
+{% block extrahead %}{{ block.super }}
+<script src="{% url 'admin:jsi18n' %}"></script>
+{{ media }}
+{% endblock %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'admin/css/forms.css' %}">{% endblock %}
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-form{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}"><i class="fas fa-home breadcrumb-home-icon"></i> Home</a>
+  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+  &rsaquo; {% if has_view_permission %}<a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %}
+  &rsaquo; {% if add %}Add {{ opts.verbose_name }}{% else %}{{ original|truncatewords:"18" }}{% endif %}
+</div>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<div class="admin-hero">
+  <div class="admin-hero-top">
+    <div class="admin-hero-left">
+      <div class="admin-hero-icon">
+        <i class="fas {% if add %}fa-plus-circle{% else %}fa-pen-to-square{% endif %}"></i>
+      </div>
+      <div>
+        <h1>{% if add %}Add {{ opts.verbose_name }}{% else %}Edit {{ opts.verbose_name }}{% endif %}</h1>
+        <p>{% if add %}Create a new {{ opts.verbose_name }} by filling in the details below{% else %}Update the {{ opts.verbose_name }} details{% endif %}</p>
+      </div>
+    </div>
+    <div class="admin-hero-actions">
+      {% if add %}
+      <a href="{% url opts|admin_urlname:'changelist' %}" class="admin-hero-btn admin-hero-btn-ghost"><i class="fas fa-arrow-left"></i> Back to List</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="admin-hero-meta">
+    <a href="{% url 'admin:products_product_changelist' %}" class="admin-hero-eco"><i class="fas fa-box"></i> Products <span class="eco-count" id="eco-products">{{ product_count|default:"-" }}</span></a>
+    <a href="{% url 'admin:orders_order_changelist' %}" class="admin-hero-eco"><i class="fas fa-shopping-cart"></i> Orders</a>
+    <a href="{% url 'admin:users_user_changelist' %}" class="admin-hero-eco"><i class="fas fa-users"></i> Users</a>
+    <a href="{% url 'admin:blog_blogpost_changelist' %}" class="admin-hero-eco"><i class="fas fa-blog"></i> Blog</a>
+    <a href="{% url 'admin:products_category_changelist' %}" class="admin-hero-eco"><i class="fas fa-tags"></i> Categories</a>
+    <a href="{% url 'admin:pages_contactmessage_changelist' %}" class="admin-hero-eco"><i class="fas fa-envelope"></i> Contacts</a>
+  </div>
+</div>
+
+<div class="two-col-layout">
+
+  <!-- LEFT: Form Fields -->
+  <div class="two-col-main">
+    <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}{% if form_url %}action="{{ form_url }}" {% endif %}method="post" id="{{ opts.model_name }}_form" novalidate>{% csrf_token %}{% block form_top %}{% endblock %}
+
+    {% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1">{% endif %}
+    {% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}">{% endif %}
+    {% if save_on_top %}{% block submit_buttons_top %}{% submit_row %}{% endblock %}{% endif %}
+
+    {% if errors %}
+    <div class="errornote">
+      <i class="fas fa-exclamation-circle admin-fs-16 admin-flex-shrink-0"></i>
+      <div>
+        {% if errors|length == 1 %}Please correct the error below.{% else %}Please correct the errors below.{% endif %}
+        {{ adminform.form.non_field_errors }}
+      </div>
+    </div>
+    {% endif %}
+
+    {% block field_sets %}
+    {% for fieldset in adminform %}
+      {% include "admin/includes/fieldset.html" with heading_level=2 prefix="fieldset" id_prefix=0 id_suffix=forloop.counter0 %}
+    {% endfor %}
+    {% endblock %}
+
+    {% block after_field_sets %}{% endblock %}
+
+    {% block inline_field_sets %}
+    {% for inline_admin_formset in inline_admin_formsets %}
+      {% include inline_admin_formset.opts.template %}
+    {% endfor %}
+    {% endblock %}
+
+    {% block after_related_objects %}{% endblock %}
+
+    {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+
+    {% block admin_change_form_document_ready %}
+      <script id="django-admin-form-add-constants"
+              src="{% static 'admin/js/change_form.js' %}"
+              {% if adminform and add %}
+                  data-model-name="{{ opts.model_name }}"
+              {% endif %}
+              async>
+      </script>
+    {% endblock %}
+
+    {% prepopulated_fields_js %}
+    </form>
+  </div>
+
+  <!-- RIGHT: Sidebar -->
+  <div class="two-col-sidebar">
+
+    <!-- Submit Actions -->
+    <div class="sidebar-section">
+      <div class="sidebar-section-head">
+        <h3><i class="fas fa-paper-plane"></i> Publish</h3>
+      </div>
+      <div class="sidebar-section-body">
+        <p>{% if add %}Fill in the details, then save.{% else %}Make changes and save to update.{% endif %}</p>
+        <div class="sidebar-actions">
+          <button type="submit" name="_save" form="{{ opts.model_name }}_form" class="button">
+            <i class="fas fa-save"></i> {% trans 'Save' %}
+          </button>
+          {% if not add %}
+          <button type="submit" name="_continue" form="{{ opts.model_name }}_form" class="button sidebar-action-green">
+            <i class="fas fa-edit"></i> {% trans 'Save and continue editing' %}
+          </button>
+          {% endif %}
+          <button type="submit" name="_addanother" form="{{ opts.model_name }}_form" class="button sidebar-action-purple">
+            <i class="fas fa-plus"></i> {% trans 'Save and add another' %}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Information -->
+    <div class="sidebar-section">
+      <div class="sidebar-section-head">
+        <h3><i class="fas fa-circle-info" style="color:var(--admin-info);"></i> Information</h3>
+      </div>
+      <div class="sidebar-section-body">
+        <div class="sidebar-item">
+          <span class="sidebar-item-label">App</span>
+          <span class="sidebar-item-value">{{ opts.app_config.verbose_name }}</span>
+        </div>
+        <div class="sidebar-item">
+          <span class="sidebar-item-label">Model</span>
+          <span class="sidebar-item-value">{{ opts.verbose_name|capfirst }}</span>
+        </div>
+        {% if not add and original %}
+        <div class="sidebar-item">
+          <span class="sidebar-item-label">ID</span>
+          <span class="sidebar-item-value">#{{ original.pk }}</span>
+        </div>
+        {% endif %}
+        {% if not add and original.get_absolute_url %}
+        <div class="sidebar-item" style="border-bottom:none;padding-top:8px;">
+          <a href="{{ original.get_absolute_url }}" target="_blank" class="sidebar-action-link">
+            <i class="fas fa-external-link-alt"></i> View on site
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if not add and has_view_permission and original %}
+    <!-- Danger Zone -->
+    <div class="sidebar-section sidebar-danger">
+      <div class="sidebar-section-head sidebar-danger-head">
+        <h3><i class="fas fa-triangle-exclamation admin-color-error"></i> Danger Zone</h3>
+      </div>
+      <div class="sidebar-section-body">
+        <p>Permanently delete this {{ opts.verbose_name }}.</p>
+        <a href="{% url opts|admin_urlname:'delete' original.pk|admin_urlquote %}" class="button sidebar-action-danger admin-w-100 admin-jc-center admin-text-deco-none">
+          <i class="fas fa-trash"></i> Delete {{ opts.verbose_name }}
+        </a>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+
+</div>
+
+{% endblock %}

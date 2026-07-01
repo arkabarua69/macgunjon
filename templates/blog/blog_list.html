@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Blog — Mac GunJon{% endblock %}
+
+{% block content %}
+
+<!-- ========== BLOG HERO ========== -->
+<section class="home-hero" style="padding:clamp(5rem,5vw,6rem) 0 clamp(3rem,3vw,4rem);">
+  <canvas id="canvas-particles"></canvas>
+  <div class="container">
+    <div class="r-grid-2 pos-relative z-1">
+
+      <!-- Left: Text -->
+      <div>
+        <div class="hero-chip d-inline-flex" data-aos="fade-up">
+          <i data-lucide="file-text" class="ic-14"></i>
+          Our Blog
+        </div>
+        <h1 class="hero-title mt-16" style="font-size:clamp(1.8rem,3.5vw,2.6rem);" data-aos="fade-up" data-aos-delay="100">
+          Insights & <span class="hero-title-grad">Updates</span>
+        </h1>
+        <p class="hero-desc" style="margin:12px 0 0;max-width:440px;" data-aos="fade-up" data-aos-delay="200">
+          Product updates, automation tips, and industry insights.
+        </p>
+      </div>
+
+      <!-- Right: Mini Eco System -->
+      <div data-aos="fade-up" data-aos-delay="150">
+        <div class="store-eco-grid">
+          <div class="store-eco-col">
+            <div class="store-eco-card" data-color="#3b82f6">
+              <div class="store-eco-ic" style="background:#dbeafe;color:#3b82f6;"><i data-lucide="file-text" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Latest Posts</h5><p>Weekly updates</p></div>
+            </div>
+            <div class="store-eco-card" data-color="#10b981">
+              <div class="store-eco-ic" style="background:#d1fae5;color:#10b981;"><i data-lucide="zap" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Tips & Tricks</h5><p>Automation guides</p></div>
+            </div>
+          </div>
+          <div class="store-eco-col store-eco-col-r">
+            <div class="store-eco-card" data-color="#d946ef">
+              <div class="store-eco-ic" style="background:#fce7f3;color:#d946ef;"><i data-lucide="trending-up" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Industry News</h5><p>Stay informed</p></div>
+            </div>
+            <div class="store-eco-card" data-color="#f97316">
+              <div class="store-eco-ic" style="background:#fff7ed;color:#f97316;"><i data-lucide="users" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Community</h5><p>Join the conversation</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========== BLOG POSTS ========== -->
+<section class="section" style="padding-bottom:var(--space-12);">
+  <div class="container pos-relative" style="z-index:1;">
+    {% if tags %}
+    <div class="d-flex fw-wrap gap-8 jc-center mb-24" data-aos="fade-up">
+      <a href="{% url 'blog:list' %}" class="hero-chip{% if not current_tag %} active{% endif %} d-inline-flex text-deco-none" style="{% if not current_tag %}background:var(--primary);color:#fff;{% endif %}">
+        All Posts
+      </a>
+      {% for tag in tags %}
+      <a href="{% url 'blog:list' %}?tag={{ tag.slug }}" class="hero-chip{% if current_tag == tag.slug %} active{% endif %} d-inline-flex text-deco-none" style="{% if current_tag == tag.slug %}background:var(--primary);color:#fff;{% endif %}">
+        {{ tag.name }}
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if posts %}
+    <div class="store-grid">
+      {% for post in posts %}
+      <article class="product-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'0' }}0">
+        {% if post.featured %}
+        <span class="product-badge">Featured</span>
+        {% endif %}
+
+        <a href="{{ post.get_absolute_url }}" class="card-img-wrap text-deco-none" style="height:200px;">
+          {% if post.display_image %}
+          <img src="{{ post.display_image }}" alt="{{ post.title }}" loading="lazy">
+          {% else %}
+          <div class="img-placeholder">
+            <i data-lucide="file-text"></i>
+          </div>
+          {% endif %}
+          <div class="card-overlay">
+            <span class="card-overlay-btn"><i data-lucide="arrow-right"></i></span>
+          </div>
+        </a>
+
+        <div class="card-body">
+          <div class="d-flex ai-center gap-8 fw-wrap">
+            <span class="product-type-tag bg-primary-50 text-primary">
+              <i data-lucide="calendar" class="ic-11 va-middle"></i> {{ post.created_at|date:"M d, Y" }}
+            </span>
+            {% if post.author %}
+            <span class="fs-7 text-muted">
+              <i data-lucide="user" class="ic-11 va-middle"></i> {{ post.author.username }}
+            </span>
+            {% endif %}
+          </div>
+
+          <h3 class="product-name fs-95 mt-4">
+            <a href="{{ post.get_absolute_url }}" class="text-deco-none" style="color:inherit;">{{ post.title }}</a>
+          </h3>
+
+          {% if post.excerpt %}
+          <p class="fs-78 text-muted m-0 overflow-hidden" style="line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;">
+            {{ post.excerpt }}
+          </p>
+          {% endif %}
+
+          <div style="margin-top:auto;padding-top:12px;">
+            <a href="{{ post.get_absolute_url }}" class="btn btn-primary btn-sm fs-78 radius" style="padding:6px 16px;">
+              Read More <i data-lucide="arrow-right" class="ic-13 va-middle ml-4"></i>
+            </a>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+    <div class="pagination-wrap">
+      {% if page_obj.has_previous %}
+      <a class="page-link" href="?page={{ page_obj.previous_page_number }}"><i data-lucide="chevron-left" class="ic-16"></i></a>
+      {% endif %}
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <span class="page-link active">{{ num }}</span>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+      {% if page_obj.has_next %}
+      <a class="page-link" href="?page={{ page_obj.next_page_number }}"><i data-lucide="chevron-right" class="ic-16"></i></a>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="store-empty">
+      <i data-lucide="file-text"></i>
+      <h5>No posts yet</h5>
+      <p>Check back soon for new content.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

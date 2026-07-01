@@ -1,0 +1,16 @@
+{% load i18n %}
+<div class="filter-section">
+  <h3>{% blocktranslate with filter_title=title %} By {{ filter_title }} {% endblocktranslate %}</h3>
+  <ul>
+    {% for choice in choices %}
+    <li{% if choice.selected %} class="selected"{% endif %}>
+      <a href="{{ choice.query_string|iriencode }}">
+        {% if choice.name %}{{ choice.name }}{% else %}{{ choice.display }}{% endif %}
+        {% if choice.counter %}
+        <span class="filter-counter">{{ choice.counter }}</span>
+        {% endif %}
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>

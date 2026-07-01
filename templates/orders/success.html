@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Confirmed — Mac GunJon - Is Bot{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+
+      <div style="height:6px;background:linear-gradient(90deg,var(--success),#059669,var(--primary));border-radius:var(--radius-lg) var(--radius-lg) 0 0;"></div>
+
+      <div class="card border-0 shadow-lg p-0 overflow-hidden" style="border-radius:0 0 var(--radius-xl) var(--radius-xl);">
+        <div class="success-wrap">
+          <div class="success-icon mx-auto">
+            <i data-lucide="check" class="ic-40"></i>
+          </div>
+
+          <h1 class="fw-bold mb-2 text-success">Order Confirmed!</h1>
+          <p class="text-muted mb-4">Thank you for your purchase. Your digital products are ready.</p>
+
+          <div class="d-inline-flex align-items-center gap-3 px-4 py-3 rounded-pill mb-4 bg-alt fs-875">>
+            <span><strong>Order:</strong> #{{ order.id }}</span>
+            <span style="color:var(--border);">|</span>
+            <span><strong>Total:</strong>
+              {% if order.currency == 'GBP' %}£{{ order.total_amount }}{% else %}${{ order.total_amount }}{% endif %}
+            </span>
+            <span style="color:var(--border);">|</span>
+            <span class="status-badge status-paid"><i data-lucide="check-circle" style="width:12px;height:12px;"></i>Paid</span>
+          </div>
+
+          <div class="alert alert-info mx-4 mb-4 text-start">
+            <div class="d-flex gap-2">
+              <i data-lucide="download" class="ic-18 flex-shrink-0 mt-1"></i>
+              <div>
+                <strong>Instant Access</strong><br>
+                <span class="fs-875">Your digital products are available immediately. Check your email for download links too.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3 justify-content-center flex-wrap px-4 pb-4">
+            <a href="{% url 'orders:order_detail' order.id %}" class="btn btn-danger btn-lg fw-bold px-4">
+              <i data-lucide="download" class="ic-18 d-inline va-middle mr-2"></i>View & Download
+            </a>
+            <a href="{% url 'products:product_list' %}" class="btn btn-outline-danger btn-lg fw-bold px-4">
+              <i data-lucide="store" class="ic-18 d-inline va-middle mr-2"></i>Continue Shopping
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

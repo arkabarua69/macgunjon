@@ -1,0 +1,495 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Profile — Mac GunJon{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="dash-hero">
+  <canvas id="canvas-particles"></canvas>
+  <div class="container">
+    <div class="dash-hero-inner">
+      <div>
+        <div class="dash-hero-badge" data-aos="fade-up">
+          <i data-lucide="settings"></i>
+          Edit Profile
+        </div>
+        <h1 class="dash-hero-title" data-aos="fade-up" data-aos-delay="100">
+          Your <span class="dash-grad">Profile</span>
+        </h1>
+        <p class="dash-hero-desc" data-aos="fade-up" data-aos-delay="200">
+          Update your personal information, avatar, and connected accounts.
+        </p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="150">
+        <div class="dash-hero-stats">
+          <div class="dash-hero-col">
+            <div class="dash-hero-stat">
+              <div class="dash-hero-stat-icon" style="background:#dbeafe;color:#3b82f6;">
+                <i data-lucide="camera"></i>
+              </div>
+              <div class="dash-hero-stat-text">
+                <h5>Profile Photo</h5>
+                <p>Upload & preview</p>
+              </div>
+            </div>
+            <div class="dash-hero-stat">
+              <div class="dash-hero-stat-icon" style="background:#d1fae5;color:#10b981;">
+                <i data-lucide="shield-check"></i>
+              </div>
+              <div class="dash-hero-stat-text">
+                <h5>Security</h5>
+                <p>Password & sessions</p>
+              </div>
+            </div>
+          </div>
+          <div class="dash-hero-col dash-hero-col-r">
+            <div class="dash-hero-stat">
+              <div class="dash-hero-stat-icon" style="background:#fce7f3;color:#d946ef;">
+                <i data-lucide="link"></i>
+              </div>
+              <div class="dash-hero-stat-text">
+                <h5>Connected</h5>
+                <p>Google & Facebook</p>
+              </div>
+            </div>
+            <div class="dash-hero-stat">
+              <div class="dash-hero-stat-icon" style="background:#fff7ed;color:#f97316;">
+                <i data-lucide="user"></i>
+              </div>
+              <div class="dash-hero-stat-text">
+                <h5>Personal Info</h5>
+                <p>Name, email, phone</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="dash-section">
+  <div class="container">
+    <div class="dash-layout">
+
+      <aside class="dash-sidebar" data-aos="fade-right">
+        <div class="dash-sidebar-user">
+          <div class="dash-avatar">
+            {% if user.avatar %}
+              <img src="{{ user.avatar.url }}" alt="{{ user.username }}">
+            {% else %}
+              {{ user.username|first|upper }}
+            {% endif %}
+          </div>
+          <div class="dash-user-meta">
+            <h6>{{ user.username }}</h6>
+            <span>{{ user.email|truncatechars:28 }}</span>
+          </div>
+        </div>
+
+        <nav class="dash-nav">
+          <a href="{% url 'users:dashboard' %}" class="dash-nav-link">
+            <i data-lucide="layout-dashboard"></i> Dashboard
+          </a>
+          <a href="{% url 'users:profile_edit' %}" class="dash-nav-link active">
+            <i data-lucide="settings"></i> Edit Profile
+          </a>
+          <a href="{% url 'users:address_list' %}" class="dash-nav-link">
+            <i data-lucide="map-pin"></i> Addresses
+            {% if address_count %}<span class="dash-badge dash-badge-blue">{{ address_count }}</span>{% endif %}
+          </a>
+          <a href="{% url 'users:session_list' %}" class="dash-nav-link">
+            <i data-lucide="monitor"></i> Sessions
+            {% if session_count %}<span class="dash-badge dash-badge-amber">{{ session_count }}</span>{% endif %}
+          </a>
+          <a href="{% url 'products:wishlist' %}" class="dash-nav-link">
+            <i data-lucide="heart"></i> Wishlist
+          </a>
+        </nav>
+
+        <div class="dash-nav-divider"></div>
+
+        <nav class="dash-nav">
+          <a href="{% url 'users:password_reset' %}" class="dash-nav-link">
+            <i data-lucide="key"></i> Change Password
+          </a>
+          <form method="post" action="{% url 'users:logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="dash-nav-link dash-nav-danger">
+              <i data-lucide="log-out"></i> Logout
+            </button>
+          </form>
+        </nav>
+      </aside>
+
+      <main class="dash-main">
+
+        <form method="post" enctype="multipart/form-data" id="profileForm" novalidate>
+          {% csrf_token %}
+
+          <div class="dash-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="dash-card-header">
+              <div class="dash-card-icon" style="background:#fce7f3;color:#d946ef;"><i data-lucide="camera"></i></div>
+              <div class="dash-card-meta"><h5>Profile Photo</h5><p>Upload a profile picture to personalize your account</p></div>
+            </div>
+            <div class="dash-card-body">
+              <div class="dash-avatar-upload">
+                <div class="dash-avatar-preview" id="avatarPreview">
+                  {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" alt="Avatar" id="avatarImg">
+                  {% else %}
+                    <span id="avatarInitial">{{ user.username|first|upper }}</span>
+                    <img src="" alt="Avatar" id="avatarImg" style="display:none;">
+                  {% endif %}
+                </div>
+                <div class="dash-avatar-meta">
+                  <h6>{{ user.username }}</h6>
+                  <p>JPG, PNG or GIF. Max size 5MB.</p>
+                  <div class="dash-avatar-actions">
+                    <label class="btn btn-primary btn-sm fw-bold cursor-pointer">
+                      <i data-lucide="upload" class="ic-14 va-middle mr-2"></i>Choose Photo
+                      <input type="file" name="avatar" accept="image/*" id="avatarInput" style="display:none;">
+                    </label>
+                    {% if user.avatar %}
+                    <button type="button" class="btn btn-outline-danger btn-sm fw-bold" id="removeAvatarBtn">
+                      <i data-lucide="trash-2" class="ic-14 va-middle mr-2"></i>Remove
+                    </button>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dash-card" data-aos="fade-up" data-aos-delay="150">
+            <div class="dash-card-header">
+              <div class="dash-card-icon" style="background:#eff6ff;color:#2563eb;"><i data-lucide="user"></i></div>
+              <div class="dash-card-meta"><h5>Personal Information</h5><p>Manage your account details</p></div>
+            </div>
+            <div class="dash-card-body">
+              <div class="dash-form-grid">
+                <div class="dash-field">
+                  <label for="id_username"><i data-lucide="at-sign"></i>Username</label>
+                  {{ form.username }}
+                  {% if form.username.errors %}<div class="dash-field-error">{{ form.username.errors }}</div>{% endif %}
+                </div>
+                <div class="dash-field">
+                  <label for="id_email"><i data-lucide="mail"></i>Email Address</label>
+                  {{ form.email }}
+                  {% if form.email.errors %}<div class="dash-field-error">{{ form.email.errors }}</div>{% endif %}
+                </div>
+                <div class="dash-field">
+                  <label for="id_phone"><i data-lucide="phone"></i>Phone Number</label>
+                  {{ form.phone }}
+                  {% if form.phone.errors %}<div class="dash-field-error">{{ form.phone.errors }}</div>{% endif %}
+                </div>
+                <div class="dash-field">
+                  <label for="id_country"><i data-lucide="globe"></i>Country</label>
+                  {{ form.country }}
+                  {% if form.country.errors %}<div class="dash-field-error">{{ form.country.errors }}</div>{% endif %}
+                </div>
+              </div>
+              <div class="dash-form-actions">
+                <button type="submit" class="btn btn-primary fw-bold" id="saveProfileBtn">
+                  <i data-lucide="save" class="ic-16 va-middle mr-2"></i>Save Changes
+                </button>
+                <a href="{% url 'users:dashboard' %}" class="btn btn-outline-secondary fw-bold">Cancel</a>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <div class="dash-card" data-aos="fade-up" data-aos-delay="200">
+          <div class="dash-card-header">
+            <div class="dash-card-icon" style="background:#ede9fe;color:#7c3aed;"><i data-lucide="lock"></i></div>
+            <div class="dash-card-meta"><h5>Change Password</h5><p>Keep your account secure with a strong password</p></div>
+          </div>
+          <div class="dash-card-body">
+            <form method="post" action="{% url 'users:change_password' %}" id="passwordForm" novalidate>
+              {% csrf_token %}
+              <div class="dash-form-grid">
+                <div class="dash-field">
+                  <label for="id_old_password"><i data-lucide="key"></i>Current Password</label>
+                  <div class="dash-pw-wrap">
+                    <input type="password" name="old_password" id="id_old_password" class="form-control" placeholder="Enter current password" required>
+                    <button type="button" class="dash-pw-toggle" data-toggle="id_old_password"><i data-lucide="eye"></i></button>
+                  </div>
+                  {% if password_form.old_password.errors %}<div class="dash-field-error">{{ password_form.old_password.errors }}</div>{% endif %}
+                </div>
+                <div class="dash-field dash-field-empty"></div>
+                <div class="dash-field">
+                  <label for="id_new_password1"><i data-lucide="lock"></i>New Password</label>
+                  <div class="dash-pw-wrap">
+                    <input type="password" name="new_password1" id="id_new_password1" class="form-control" placeholder="Enter new password" required>
+                    <button type="button" class="dash-pw-toggle" data-toggle="id_new_password1"><i data-lucide="eye"></i></button>
+                  </div>
+                  {% if password_form.new_password1.errors %}<div class="dash-field-error">{{ password_form.new_password1.errors }}</div>{% endif %}
+                </div>
+                <div class="dash-field">
+                  <label for="id_new_password2"><i data-lucide="lock"></i>Confirm New Password</label>
+                  <div class="dash-pw-wrap">
+                    <input type="password" name="new_password2" id="id_new_password2" class="form-control" placeholder="Confirm new password" required>
+                    <button type="button" class="dash-pw-toggle" data-toggle="id_new_password2"><i data-lucide="eye"></i></button>
+                  </div>
+                  {% if password_form.new_password2.errors %}<div class="dash-field-error">{{ password_form.new_password2.errors }}</div>{% endif %}
+                </div>
+              </div>
+              <div class="dash-form-actions">
+                <button type="submit" class="btn btn-primary fw-bold">
+                  <i data-lucide="key" class="ic-16 va-middle mr-2"></i>Update Password
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="dash-card" data-aos="fade-up" data-aos-delay="250">
+          <div class="dash-card-header">
+            <div class="dash-card-icon" style="background:#dbeafe;color:#2563eb;"><i data-lucide="link"></i></div>
+            <div class="dash-card-meta"><h5>Connected Accounts</h5><p>Manage your linked social accounts for quick sign-in</p></div>
+          </div>
+          <div class="dash-card-body">
+
+            <div class="dash-social">
+              <div class="dash-social-left">
+                <div class="dash-social-icon" style="background:#fff;border:1px solid #e2e8f0;">
+                  <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                </div>
+                <div class="dash-social-info">
+                  <h6>Google</h6>
+                  <p>{% if 'google' in social_accounts %}Connected — quick sign-in enabled{% else %}Not connected{% endif %}</p>
+                </div>
+              </div>
+              <div>
+                {% if 'google' in social_accounts %}
+                  <span class="status-badge status-paid fs-7"><i data-lucide="check" class="ic-10"></i> Connected</span>
+                {% else %}
+                  <a href="{% url 'socialaccount_connections' %}" class="btn btn-outline-primary btn-sm fw-bold">
+                    <i data-lucide="plus" style="width:12px;height:12px;vertical-align:middle;margin-right:2px;"></i>Connect
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="dash-social">
+              <div class="dash-social-left">
+                <div class="dash-social-icon" style="background:#1877F2;">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="#fff"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </div>
+                <div class="dash-social-info">
+                  <h6>Facebook</h6>
+                  <p>{% if 'facebook' in social_accounts %}Connected — quick sign-in enabled{% else %}Not connected{% endif %}</p>
+                </div>
+              </div>
+              <div>
+                {% if 'facebook' in social_accounts %}
+                  <span class="status-badge status-paid fs-7"><i data-lucide="check" class="ic-10"></i> Connected</span>
+                {% else %}
+                  <a href="{% url 'socialaccount_connections' %}" class="btn btn-outline-primary btn-sm fw-bold">
+                    <i data-lucide="plus" style="width:12px;height:12px;vertical-align:middle;margin-right:2px;"></i>Connect
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="dash-card" data-aos="fade-up" data-aos-delay="300">
+          <div class="dash-card-header">
+            <div class="dash-card-icon" style="background:#d1fae5;color:#10b981;"><i data-lucide="shield-check"></i></div>
+            <div class="dash-card-meta"><h5>Security Settings</h5><p>Manage your account security</p></div>
+          </div>
+          <div class="dash-card-body">
+
+            <div class="dash-sec-row">
+              <div class="dash-sec-left">
+                <div class="dash-sec-icon" style="background:#eff6ff;color:#2563eb;"><i data-lucide="key"></i></div>
+                <div class="dash-sec-text"><h6>Password</h6><p>Last changed: Unknown</p></div>
+              </div>
+              <a href="#" onclick="document.getElementById('passwordForm').scrollIntoView({behavior:'smooth'});return false;" class="btn btn-outline-danger btn-sm fw-bold">Change</a>
+            </div>
+
+            <div class="dash-sec-row">
+              <div class="dash-sec-left">
+                <div class="dash-sec-icon" style="background:#fef3c7;color:#d97706;"><i data-lucide="monitor"></i></div>
+                <div class="dash-sec-text"><h6>Active Sessions</h6><p>{{ session_count }} device{{ session_count|pluralize }} logged in</p></div>
+              </div>
+              <a href="{% url 'users:session_list' %}" class="btn btn-outline-danger btn-sm fw-bold">Manage</a>
+            </div>
+
+            <div class="dash-sec-row">
+              <div class="dash-sec-left">
+                <div class="dash-sec-icon" style="background:{% if user.email_verified %}#d1fae5{% else %}#fef3c7{% endif %};color:{% if user.email_verified %}#10b981{% else %}#d97706{% endif %};">
+                  <i data-lucide="mail-check"></i>
+                </div>
+                <div class="dash-sec-text">
+                  <h6>Email Verification</h6>
+                  <p>{% if user.email_verified %}Your email is verified{% else %}Please verify your email address{% endif %}</p>
+                </div>
+              </div>
+              {% if not user.email_verified %}
+              <span class="status-badge status-pending">Pending</span>
+              {% else %}
+              <span class="status-badge status-paid"><i data-lucide="check" class="ic-10"></i> Verified</span>
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+
+        <div class="dash-danger" data-aos="fade-up" data-aos-delay="350">
+          <div class="dash-danger-inner">
+            <div>
+              <h5><i data-lucide="alert-triangle"></i>Delete Account</h5>
+              <p>Once you delete your account, there is no going back. Please be certain.</p>
+            </div>
+            <form method="post" action="{% url 'users:delete_account' %}" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm fw-bold border-none radius" style="background:#ef4444;color:#fff;padding:8px 20px;">
+                <i data-lucide="trash-2" class="ic-14 va-middle mr-2"></i>Delete Account
+              </button>
+            </form>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+  var avatarInput = document.getElementById('avatarInput');
+  var removeBtn = document.getElementById('removeAvatarBtn');
+  var avatarImg = document.getElementById('avatarImg');
+  var avatarInitial = document.getElementById('avatarInitial');
+
+  function previewAvatar(input) {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        avatarImg.src = e.target.result;
+        avatarImg.style.display = 'block';
+        if (avatarInitial) avatarInitial.style.display = 'none';
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  if (avatarInput) {
+    avatarInput.addEventListener('change', function() {
+      previewAvatar(this);
+    });
+  }
+
+  if (removeBtn) {
+    removeBtn.addEventListener('click', function() {
+      avatarImg.src = '';
+      avatarImg.style.display = 'none';
+      if (avatarInitial) avatarInitial.style.display = 'flex';
+      if (avatarInput) avatarInput.value = '';
+    });
+  }
+
+  document.querySelectorAll('.dash-pw-toggle').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var fieldId = this.getAttribute('data-toggle');
+      var field = document.getElementById(fieldId);
+      var icon = this.querySelector('i');
+      if (field) {
+        if (field.type === 'password') {
+          field.type = 'text';
+          icon.setAttribute('data-lucide', 'eye-off');
+        } else {
+          field.type = 'password';
+          icon.setAttribute('data-lucide', 'eye');
+        }
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+      }
+    });
+  });
+
+  var profileForm = document.getElementById('profileForm');
+  if (profileForm) {
+    profileForm.addEventListener('submit', function(e) {
+      var username = document.getElementById('id_username');
+      var email = document.getElementById('id_email');
+      var valid = true;
+
+      document.querySelectorAll('#profileForm .dash-field-error').forEach(function(el) { el.remove(); });
+
+      if (username) {
+        var val = username.value.trim();
+        if (!val) {
+          showFieldError(username, 'Username is required.');
+          valid = false;
+        } else if (val.length < 3) {
+          showFieldError(username, 'Username must be at least 3 characters.');
+          valid = false;
+        }
+      }
+
+      if (email) {
+        var val = email.value.trim();
+        if (!val) {
+          showFieldError(email, 'Email is required.');
+          valid = false;
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+          showFieldError(email, 'Please enter a valid email address.');
+          valid = false;
+        }
+      }
+
+      document.querySelectorAll('#profileForm .form-control').forEach(function(f) {
+        if (f.style.borderColor === 'rgb(239, 68, 68)') {
+          f.style.borderColor = '';
+        }
+      });
+
+      if (!valid) {
+        e.preventDefault();
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+      }
+    });
+  }
+
+  function showFieldError(field, message) {
+    var error = document.createElement('div');
+    error.className = 'dash-field-error';
+    error.textContent = message;
+    field.parentNode.appendChild(error);
+    field.style.borderColor = '#ef4444';
+  }
+
+  var passwordForm = document.getElementById('passwordForm');
+  if (passwordForm) {
+    passwordForm.addEventListener('submit', function(e) {
+      var newPass1 = document.getElementById('id_new_password1');
+      var newPass2 = document.getElementById('id_new_password2');
+
+      document.querySelectorAll('#passwordForm .dash-field-error').forEach(function(el) { el.remove(); });
+
+      if (newPass1 && newPass1.value && newPass1.value.length < 8) {
+        showFieldError(newPass1, 'Password must be at least 8 characters.');
+        e.preventDefault();
+        return;
+      }
+
+      if (newPass1 && newPass2 && newPass1.value !== newPass2.value) {
+        showFieldError(newPass2, 'Passwords do not match.');
+        e.preventDefault();
+      }
+    });
+  }
+})();
+</script>
+{% endblock %}

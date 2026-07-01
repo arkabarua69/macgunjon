@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Site Settings - Dashboard{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="fw-bold"><i data-lucide="settings" class="ic-28 va-middle mr-2 text-primary"></i>Site Settings</h1>
+    <a href="{% url 'dashboard:overview' %}" class="btn btn-outline-secondary"><i data-lucide="arrow-left"></i> Back</a>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+      <form method="post">
+        {% csrf_token %}
+        <div class="row g-4">
+          <div class="col-md-6">
+            <h6 class="fw-bold mb-3">General</h6>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Site Name</label>
+              <input type="text" name="site_name" value="{{ settings.site_name }}" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Tagline</label>
+              <input type="text" name="tagline" value="{{ settings.tagline }}" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Contact Email</label>
+              <input type="email" name="contact_email" value="{{ settings.contact_email }}" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">WhatsApp Number</label>
+              <input type="text" name="whatsapp_number" value="{{ settings.whatsapp_number }}" class="form-control">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <h6 class="fw-bold mb-3">Social Media</h6>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Facebook URL</label>
+              <input type="url" name="facebook_url" value="{{ settings.facebook_url }}" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Twitter URL</label>
+              <input type="url" name="twitter_url" value="{{ settings.twitter_url }}" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">LinkedIn URL</label>
+              <input type="url" name="linkedin_url" value="{{ settings.linkedin_url }}" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">GitHub URL</label>
+              <input type="url" name="github_url" value="{{ settings.github_url }}" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Discord URL</label>
+              <input type="url" name="discord_url" value="{{ settings.discord_url }}" class="form-control">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <h6 class="fw-bold mb-3">SEO</h6>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Meta Title</label>
+              <input type="text" name="meta_title" value="{{ settings.meta_title }}" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Meta Description</label>
+              <textarea name="meta_description" class="form-control" rows="3">{{ settings.meta_description }}</textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Google Analytics ID</label>
+              <input type="text" name="google_analytics_id" value="{{ settings.google_analytics_id }}" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Facebook Pixel ID</label>
+              <input type="text" name="facebook_pixel_id" value="{{ settings.facebook_pixel_id }}" class="form-control">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <h6 class="fw-bold mb-3">Content</h6>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Footer Text</label>
+              <textarea name="footer_text" class="form-control" rows="3">{{ settings.footer_text }}</textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">About Text</label>
+              <textarea name="about_text" class="form-control" rows="3">{{ settings.about_text }}</textarea>
+            </div>
+            <div class="mb-3 form-check form-switch">
+              <input type="checkbox" name="maintenance_mode" class="form-check-input" id="maintenanceMode" {% if settings.maintenance_mode %}checked{% endif %}>
+              <label class="form-check-label fw-bold" for="maintenanceMode">Maintenance Mode</label>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <button type="submit" class="btn btn-primary fw-bold"><i data-lucide="save" class="ic-16 va-middle mr-2"></i>Save Settings</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

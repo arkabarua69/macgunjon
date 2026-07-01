@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Store — Mac GunJon{% endblock %}
+
+{% block content %}
+
+<!-- ========== STORE HERO ========== -->
+
+<section class="home-hero" style="padding:clamp(5rem,5vw,6rem) 0 clamp(3rem,3vw,4rem);">
+  <canvas id="canvas-particles"></canvas>
+  <div class="container">
+    <div class="store-hero-grid r-grid-2 pos-relative" style="z-index:1;">
+
+      <!-- Left: Text -->
+      <div>
+        <div class="hero-chip d-inline-flex" data-aos="fade-up">
+          <i data-lucide="store" class="ic-14"></i>
+          Our Store
+        </div>
+        <h1 class="hero-title" style="font-size:clamp(1.8rem,3.5vw,2.6rem);margin-top:16px;" data-aos="fade-up" data-aos-delay="100">
+          All <span class="hero-title-grad">Products</span>
+        </h1>
+        <p class="hero-desc" style="margin:12px 0 0;max-width:440px;" data-aos="fade-up" data-aos-delay="200">
+          Browse our full catalog of digital products, templates, bots, and automation tools.
+        </p>
+      </div>
+
+      <!-- Right: Mini Eco System -->
+      <div data-aos="fade-up" data-aos-delay="150">
+        <div class="store-eco-grid">
+          <div class="store-eco-col">
+            <div class="store-eco-card" data-color="#3b82f6">
+              <div class="store-eco-ic eco-ic-blue"><i data-lucide="package" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>{{ total_products }} Products</h5><p>Curated digital tools</p></div>            </div>
+            <div class="store-eco-card" data-color="#10b981">
+              <div class="store-eco-ic eco-ic-green"><i data-lucide="zap" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Instant Delivery</h5><p>Get it immediately</p></div>
+            </div>
+          </div>
+          <div class="store-eco-col store-eco-col-r">
+            <div class="store-eco-card" data-color="#d946ef">
+              <div class="store-eco-ic eco-ic-pink"><i data-lucide="shield-check" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Secure Payments</h5><p>Powered by Stripe</p></div>
+            </div>
+            <div class="store-eco-card" data-color="#f97316">
+              <div class="store-eco-ic eco-ic-amber"><i data-lucide="headphones" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>24/7 Support</h5><p>AI assistant ready</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========== STORE LAYOUT ========== -->
+<section class="section" style="padding-top:var(--space-4);padding-bottom:var(--space-12);">
+  <div class="container pos-relative" style="z-index:1;">
+    <form method="get" action="">
+      <div class="store-layout">
+
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="store-sidebar">
+
+          <div class="sidebar-block">
+            <label class="sidebar-label"><i data-lucide="search"></i> Search</label>
+            <div class="pos-relative">
+              <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Search products..." class="sidebar-input" style="padding-left:36px;">
+              <i data-lucide="search" class="pos-absolute" style="left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted);pointer-events:none;"></i>
+            </div>
+          </div>
+
+          <div class="sidebar-block">
+            <label class="sidebar-label"><i data-lucide="grid-3x3"></i> Categories</label>
+            <div class="sidebar-links">
+              <a href="?" class="sidebar-link {% if not request.GET.category %}active{% endif %}">All</a>
+              {% for cat in categories %}
+              <a href="?category={{ cat.slug }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="sidebar-link {% if request.GET.category == cat.slug %}active{% endif %}">{{ cat.name }}</a>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="sidebar-block">
+            <label class="sidebar-label"><i data-lucide="tag"></i> Product Type</label>
+            <div class="sidebar-links">
+              <a href="?" class="sidebar-link {% if not request.GET.type %}active{% endif %}">All</a>
+              <a href="?type=digital{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="sidebar-link {% if request.GET.type == 'digital' %}active{% endif %}">Digital</a>
+              <a href="?type=website{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="sidebar-link {% if request.GET.type == 'website' %}active{% endif %}">Websites</a>
+              <a href="?type=bot{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="sidebar-link {% if request.GET.type == 'bot' %}active{% endif %}">Bots</a>
+              <a href="?type=course{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="sidebar-link {% if request.GET.type == 'course' %}active{% endif %}">Courses</a>
+            </div>
+          </div>
+
+          <div class="sidebar-block">
+            <label class="sidebar-label"><i data-lucide="arrow-up-down"></i> Sort By</label>
+            <div class="sidebar-links">
+              <a href="?" class="sidebar-link {% if not request.GET.sort %}active{% endif %}">Default</a>
+              <a href="?sort=newest{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}" class="sidebar-link {% if request.GET.sort == 'newest' %}active{% endif %}">Newest</a>
+              <a href="?sort=price_low{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}" class="sidebar-link {% if request.GET.sort == 'price_low' %}active{% endif %}">Price: Low to High</a>
+              <a href="?sort=price_high{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}" class="sidebar-link {% if request.GET.sort == 'price_high' %}active{% endif %}">Price: High to Low</a>
+              <a href="?sort=name{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}" class="sidebar-link {% if request.GET.sort == 'name' %}active{% endif %}">Name: A-Z</a>
+            </div>
+          </div>
+
+        </aside>
+
+        <!-- ===== PRODUCTS ===== -->
+        <div class="store-products">
+
+          <!-- Quick type filter chips -->
+          <div class="store-chips">
+            <a href="?" class="chip {% if not request.GET.type %}active{% endif %}">All</a>
+            <a href="?type=website{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="chip {% if request.GET.type == 'website' %}active{% endif %}"><i data-lucide="globe"></i> Websites</a>
+            <a href="?type=bot{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="chip {% if request.GET.type == 'bot' %}active{% endif %}"><i data-lucide="bot"></i> Bots</a>
+            <a href="?type=course{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="chip {% if request.GET.type == 'course' %}active{% endif %}"><i data-lucide="graduation-cap"></i> Courses</a>
+            <a href="?type=digital{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="chip {% if request.GET.type == 'digital' %}active{% endif %}"><i data-lucide="download"></i> Digital</a>
+          </div>
+
+          <!-- Toolbar: results count + sort -->
+          <div class="store-toolbar">
+            <div class="store-results">
+              <span class="text-muted fs-85"><strong>{{ products|length }}</strong> product{{ products|length|pluralize }} found</span>
+            </div>
+            <div class="store-toolbar-right">
+              <select class="store-sort-select" name="sort" onchange="this.form.submit()">
+                <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Sort: Newest</option>
+                <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name: A-Z</option>
+              </select>
+            </div>
+          </div>
+
+          {% if request.GET.q or request.GET.type or request.GET.category or request.GET.sort %}
+          <div class="active-filters">
+            <span class="active-filters-label">Active:</span>
+            {% if request.GET.q %}
+            <span class="filter-tag">{{ request.GET.q }} <a href="?{% if request.GET.type %}type={{ request.GET.type }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"><i data-lucide="x"></i></a></span>
+            {% endif %}
+            {% if request.GET.type %}
+            <span class="filter-tag">{{ request.GET.type }} <a href="?{% if request.GET.q %}q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"><i data-lucide="x"></i></a></span>
+            {% endif %}
+            {% if request.GET.category %}
+            <span class="filter-tag">{{ request.GET.category }} <a href="?{% if request.GET.q %}q={{ request.GET.q }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"><i data-lucide="x"></i></a></span>
+            {% endif %}
+            <a href="?" class="filter-tag filter-tag-clear">Clear all</a>
+          </div>
+          {% endif %}
+
+          {% if products %}
+          {% with currency=request.session.currency %}
+          <div class="store-grid">
+            {% for product in products %}
+            <div data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'0' }}5">
+              {% include 'products/_product_card.html' with product=product currency=currency %}
+            </div>
+            {% endfor %}
+          </div>
+          {% endwith %}
+          {% else %}
+          <div class="store-empty">
+            <i data-lucide="package-x"></i>
+            <h5>No products found</h5>
+            <p>Try adjusting your search or filters.</p>
+            <a href="{% url 'products:product_list' %}" class="btn btn-primary">Browse all products</a>
+          </div>
+          {% endif %}
+
+          {% include 'includes/pagination.html' %}
+
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,13 @@
+venv/
+.env
+.git
+.gitignore
+*.pyc
+__pycache__/
+db.sqlite3
+logs/
+media/
+staticfiles/
+*.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Wishlist — Mac GunJon{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="dash-hero">
+  <canvas id="canvas-particles"></canvas>
+  <div class="container">
+    <div class="dash-hero-inner">
+      <div>
+        <div class="dash-hero-badge" data-aos="fade-up">
+          <i data-lucide="heart"></i>
+          My Wishlist
+        </div>
+        <h1 class="dash-hero-title" data-aos="fade-up" data-aos-delay="100">
+          Your <span class="dash-grad">Wishlist</span>
+        </h1>
+        <p class="dash-hero-desc" data-aos="fade-up" data-aos-delay="200">
+          Products you've saved — ready when you are.
+        </p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="150">
+        <div class="dash-hero-stats">
+          <div class="dash-hero-col">
+            <div class="dash-hero-stat">
+              <div class="dash-hero-stat-icon eco-ic-pink">
+                <i data-lucide="heart"></i>
+              </div>
+              <div class="dash-hero-stat-text">
+                <h5>{{ wishlist_items|length }} Item{{ wishlist_items|length|pluralize }}</h5>
+                <p>Saved products</p>
+              </div>
+            </div>
+            <div class="dash-hero-stat">
+              <div class="dash-hero-stat-icon eco-ic-green">
+                <i data-lucide="shopping-bag"></i>
+              </div>
+              <div class="dash-hero-stat-text">
+                <h5>Ready to Buy</h5>
+                <p>Add to cart anytime</p>
+              </div>
+            </div>
+          </div>
+          <div class="dash-hero-col dash-hero-col-r">
+            <div class="dash-hero-stat">
+              <div class="dash-hero-stat-icon eco-ic-blue">
+                <i data-lucide="store"></i>
+              </div>
+              <div class="dash-hero-stat-text">
+                <h5>Browse Store</h5>
+                <p>Discover more</p>
+              </div>
+            </div>
+            <div class="dash-hero-stat">
+              <div class="dash-hero-stat-icon eco-ic-amber">
+                <i data-lucide="bell"></i>
+              </div>
+              <div class="dash-hero-stat-text">
+                <h5>Price Alerts</h5>
+                <p>Stay updated</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="dash-section">
+  <div class="container">
+    <div class="dash-layout">
+
+      <aside class="dash-sidebar" data-aos="fade-right">
+        <div class="dash-sidebar-user">
+          <div class="dash-avatar">
+            {% if user.avatar %}
+              <img src="{{ user.avatar.url }}" alt="{{ user.username }}">
+            {% else %}
+              {{ user.username|first|upper }}
+            {% endif %}
+          </div>
+          <div class="dash-user-meta">
+            <h6>{{ user.username }}</h6>
+            <span>{{ user.email|truncatechars:28 }}</span>
+          </div>
+        </div>
+
+        <nav class="dash-nav">
+          <a href="{% url 'users:dashboard' %}" class="dash-nav-link">
+            <i data-lucide="layout-dashboard"></i> Dashboard
+          </a>
+          <a href="{% url 'users:profile_edit' %}" class="dash-nav-link">
+            <i data-lucide="settings"></i> Edit Profile
+          </a>
+          <a href="{% url 'users:address_list' %}" class="dash-nav-link">
+            <i data-lucide="map-pin"></i> Addresses
+            {% if address_count %}<span class="dash-badge dash-badge-blue">{{ address_count }}</span>{% endif %}
+          </a>
+          <a href="{% url 'users:session_list' %}" class="dash-nav-link">
+            <i data-lucide="monitor"></i> Sessions
+            {% if session_count %}<span class="dash-badge dash-badge-amber">{{ session_count }}</span>{% endif %}
+          </a>
+          <a href="{% url 'products:wishlist' %}" class="dash-nav-link active">
+            <i data-lucide="heart"></i> Wishlist
+            {% if wishlist_count %}<span class="dash-badge dash-badge-pink">{{ wishlist_count }}</span>{% endif %}
+          </a>
+        </nav>
+
+        <div class="dash-nav-divider"></div>
+
+        <nav class="dash-nav">
+          <a href="{% url 'users:password_reset' %}" class="dash-nav-link">
+            <i data-lucide="key"></i> Change Password
+          </a>
+          <form method="post" action="{% url 'users:logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="dash-nav-link dash-nav-danger">
+              <i data-lucide="log-out"></i> Logout
+            </button>
+          </form>
+        </nav>
+      </aside>
+
+      <main class="dash-main">
+
+        <div class="dash-card" data-aos="fade-up">
+          <div class="dash-card-header">
+            <div class="dash-card-icon eco-ic-pink"><i data-lucide="heart"></i></div>
+            <div class="dash-card-meta">
+              <h5>My Wishlist</h5>
+              <p>{{ wishlist_items|length }} item{{ wishlist_items|length|pluralize }} saved</p>
+            </div>
+            {% if wishlist_items %}
+            <a href="{% url 'products:product_list' %}" class="btn btn-outline-primary btn-sm fw-bold fs-78" style="margin-left:auto;">
+              <i data-lucide="store" class="ic-12 va-middle" style="margin-right:2px;"></i>Browse Store
+            </a>
+            {% endif %}
+          </div>
+          <div class="dash-card-body">
+            {% if wishlist_items %}
+            {% with currency=request.session.currency %}
+            <div class="d-grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.75rem;">
+              {% for item in wishlist_items %}
+              <div class="dash-wish-card">
+                <a href="{% url 'products:remove_from_wishlist' item.product.id %}"
+                   class="dash-wish-btn"
+                   style="opacity:1;transform:scale(1);background:#fef2f2;color:#ef4444;border-color:#fecaca;">
+                  <i data-lucide="heart-off"></i>
+                </a>
+                <div class="dash-wish-img">
+                  {% if item.product.display_image %}
+                    <img src="{{ item.product.display_image }}" alt="{{ item.product.name }}" loading="lazy">
+                  {% else %}
+                    <div class="dash-placeholder"><i data-lucide="package"></i></div>
+                  {% endif %}
+                </div>
+                <div class="dash-wish-info">
+                  <span class="d-inline-block fw-6" style="font-size:0.65rem;color:#2563eb;background:#eff6ff;padding:2px 8px;border-radius:9999px;margin-bottom:4px;">{{ item.product.get_product_type_display }}</span>
+                  <h6>{{ item.product.name|truncatechars:40 }}</h6>
+                  <span class="dash-wish-price">{% if currency == 'GBP' %}&pound;{{ item.product.price_gbp }}{% else %}${{ item.product.price_usd }}{% endif %}</span>
+                  <div class="d-flex gap-4" style="margin-top:8px;">
+                    <a href="{{ item.product.get_absolute_url }}" class="btn btn-primary btn-sm fw-bold fs-72" style="flex:1;padding:6px 10px;">
+                      <i data-lucide="eye" class="ic-12 va-middle" style="margin-right:2px;"></i>View
+                    </a>
+                    <form action="{% url 'cart:cart_add' item.product.id %}" method="post" style="flex:1;">
+                      {% csrf_token %}
+                      <input type="hidden" name="quantity" value="1">
+                      <button type="submit" class="btn btn-outline-primary btn-sm fw-bold fs-72 w-100" style="padding:6px 10px;">
+                        <i data-lucide="shopping-cart" class="ic-12 va-middle" style="margin-right:2px;"></i>Cart
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            {% endwith %}
+            {% else %}
+            <div class="dash-empty">
+              <i data-lucide="heart-off"></i>
+              <h5>Your wishlist is empty</h5>
+              <p>Save products you love and come back to them anytime.</p>
+              <a href="{% url 'products:product_list' %}" class="btn btn-primary fw-bold" style="margin-top:0.75rem;">
+                <i data-lucide="store" class="ic-16 va-middle" style="margin-right:4px;"></i>Discover Products
+              </a>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

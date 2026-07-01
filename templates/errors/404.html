@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Page Not Found — Mac GunJon{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center" style="min-height:60vh;">
+  <div class="row justify-content-center align-items-center" style="min-height:60vh;">
+    <div class="col-md-6" data-aos="fade-up">
+      <div class="fw-8 opacity-20" style="font-size:6rem;color:var(--red);line-height:1;">404</div>
+      <h1 class="fw-bold mb-3">Page Not Found</h1>
+      <p class="text-muted mb-4">The page you are looking for does not exist or has been moved.</p>
+      <div class="d-flex gap-3 justify-content-center">
+        <a href="{% url 'products:product_list' %}" class="btn btn-danger btn-lg rounded-pill px-4">
+          <i data-lucide="home" class="ic-18 va-middle" style="margin-right:.3rem;"></i>Go Home
+        </a>
+        <a href="{% url 'pages:contact' %}" class="btn btn-outline-danger btn-lg rounded-pill px-4">
+          <i data-lucide="mail" class="ic-18 va-middle" style="margin-right:.3rem;"></i>Contact Us
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block title %}{{ app_label|capfirst }} | Mac GunJon Admin{% endblock %}
+{% block bodyclass %}{{ block.super }} app-{{ app_label }}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}"><i class="fas fa-home breadcrumb-home-icon"></i> Home</a>
+  &rsaquo; <span class="current">{{ app_label|capfirst }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<div class="admin-hero">
+  <div class="admin-hero-top">
+    <div class="admin-hero-left">
+      <div class="admin-hero-icon"><i class="fas fa-cubes"></i></div>
+      <div>
+        <h1>{{ app_label|capfirst }}</h1>
+        <p>All models and sections in the {{ app_label|capfirst }} module</p>
+      </div>
+    </div>
+  </div>
+  <div class="admin-hero-meta">
+    <a href="{% url 'admin:products_product_changelist' %}" class="admin-hero-eco"><i class="fas fa-box"></i> Products</a>
+    <a href="{% url 'admin:orders_order_changelist' %}" class="admin-hero-eco"><i class="fas fa-shopping-cart"></i> Orders</a>
+    <a href="{% url 'admin:users_user_changelist' %}" class="admin-hero-eco"><i class="fas fa-users"></i> Users</a>
+    <a href="{% url 'admin:blog_blogpost_changelist' %}" class="admin-hero-eco"><i class="fas fa-blog"></i> Blog</a>
+    <a href="{% url 'admin:products_category_changelist' %}" class="admin-hero-eco"><i class="fas fa-tags"></i> Categories</a>
+    <a href="{% url 'admin:pages_contactmessage_changelist' %}" class="admin-hero-eco"><i class="fas fa-envelope"></i> Contacts</a>
+  </div>
+</div>
+
+{% if app_list %}
+<div class="dash-sections-grid">
+  {% for model in app_list %}
+  <div class="dash-app-card">
+    <a href="{% if model.admin_url %}{{ model.admin_url }}{% else %}#{% endif %}" class="dash-app-card-head">
+      <div class="dash-app-card-icon dash-app-color-{{ forloop.counter0|stringformat:'s'|slice:':1' }}">
+        <i class="fas fa-cube"></i>
+      </div>
+      <div class="dash-app-card-info">
+        <h3>{{ model.name }}</h3>
+        <p>{% if model.admin_url %}Manage {{ model.name }}{% else %}Read only{% endif %}</p>
+      </div>
+      {% if model.admin_url %}
+      <span class="app-index-model-count"><i class="fas fa-arrow-right admin-fs-10"></i></span>
+      {% endif %}
+    </a>
+    {% if model.admin_url %}
+    <div class="dash-app-card-list">
+      <a href="{{ model.admin_url }}" class="dash-app-model-link">
+        <span>{{ model.name }}</span>
+        <i class="fas fa-chevron-right model-arrow"></i>
+      </a>
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="app-empty-state">
+  <div class="app-empty-icon">
+    <i class="fas fa-cube"></i>
+  </div>
+  <p>No models available in this app.</p>
+</div>
+{% endif %}
+
+{% endblock %}

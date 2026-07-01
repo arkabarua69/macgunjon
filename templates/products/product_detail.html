@@ -1,0 +1,460 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} — Mac GunJon{% endblock %}
+
+{% block content %}
+
+<style>
+.product-detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start; }
+.product-features-eco { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+.feature-eco-card {
+  text-align:center; background:var(--bg); border:1px solid var(--border); border-radius:16px; padding:24px 16px;
+  transition:all 0.35s cubic-bezier(0.16,1,0.3,1); cursor:default;
+}
+.feature-eco-card:hover { transform:translateY(-4px); box-shadow:0 12px 32px rgba(37,99,235,0.1); border-color:rgba(37,99,235,0.2); }
+.feature-eco-card:hover .feature-eco-ic { transform:scale(1.12) rotate(-4deg); }
+.feature-eco-ic { transition:all 0.35s cubic-bezier(0.16,1,0.3,1); }
+@media (max-width:768px) {
+  .product-detail-grid { grid-template-columns:1fr !important; }
+  .product-features-eco { grid-template-columns:repeat(2,1fr) !important; }
+  .pd-hero-grid { grid-template-columns:1fr !important; }
+  .pd-eco { display:none !important; }
+}
+</style>
+
+<!-- ========== PRODUCT HERO ========== -->
+<section class="home-hero" style="padding:clamp(4rem,4vw,5rem) 0;">
+  <canvas id="canvas-particles"></canvas>
+  <div class="container">
+    <div class="pd-hero-grid r-grid-2 pos-relative" style="z-index:1;">
+
+      <!-- Left: Breadcrumb + Title -->
+      <div>
+        <nav class="d-flex ai-center gap-8 fs-78 text-muted mb-16" data-aos="fade-up">
+          <a href="{% url 'products:product_list' %}" class="text-muted text-deco-none">Store</a>
+          <i data-lucide="chevron-right" class="ic-13"></i>
+          <a href="{% url 'products:product_list_by_category' product.category.slug %}" class="text-muted text-deco-none">{{ product.category.name }}</a>
+          <i data-lucide="chevron-right" class="ic-13"></i>
+          <span class="fw-6 overflow-hidden whitespace-nowrap text-body text-ellipsis max-w-200">{{ product.name }}</span>
+        </nav>
+        <div class="hero-chip d-inline-flex" data-aos="fade-up">
+          <i data-lucide="package" class="ic-14"></i>
+          {{ product.get_product_type_display }}
+        </div>
+        <h1 class="hero-title mt-14" style="font-size:clamp(1.6rem,3vw,2.4rem);" data-aos="fade-up" data-aos-delay="100">
+          {{ product.name }}
+        </h1>
+        <div class="d-flex ai-center gap-16 mt-12" data-aos="fade-up" data-aos-delay="150">
+          <div class="d-flex ai-center gap-4">
+            {% for i in "12345" %}
+              {% if forloop.counter <= product.get_average_rating %}
+              <i data-lucide="star" class="ic-15" style="fill:#f59e0b;color:#f59e0b;"></i>
+              {% elif forloop.counter <= product.get_average_rating|add:"0.5" %}
+              <i data-lucide="star-half" class="ic-15" style="color:#f59e0b;"></i>
+              {% else %}
+              <i data-lucide="star" class="ic-15" style="color:#d1d5db;"></i>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <span class="fs-82 text-muted">({{ reviews|length }} review{{ reviews|length|pluralize }})</span>
+        </div>
+        <div class="hero-desc fs-95 mt-16 max-w-480" data-aos="fade-up" data-aos-delay="200">
+          {{ product.description }}
+        </div>
+      </div>
+
+      <!-- Right: Mini Eco System -->
+      <div class="pd-eco" data-aos="fade-up" data-aos-delay="150">
+        <div class="store-eco-grid">
+          <div class="store-eco-col">
+            <div class="store-eco-card" data-color="#3b82f6">
+              <div class="store-eco-ic eco-ic-blue"><i data-lucide="zap" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Instant Delivery</h5><p>Download immediately</p></div>
+            </div>
+            <div class="store-eco-card" data-color="#10b981">
+              <div class="store-eco-ic eco-ic-green"><i data-lucide="shield-check" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Secure Payment</h5><p>Powered by Stripe</p></div>
+            </div>
+          </div>
+          <div class="store-eco-col store-eco-col-r">
+            <div class="store-eco-card" data-color="#d946ef">
+              <div class="store-eco-ic eco-ic-pink"><i data-lucide="refresh-cw" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Lifetime Access</h5><p>Free updates</p></div>
+            </div>
+            <div class="store-eco-card" data-color="#f97316">
+              <div class="store-eco-ic eco-ic-amber"><i data-lucide="headphones" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>24/7 Support</h5><p>AI &amp; email</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========== PRODUCT DETAILS ========== -->
+<section class="section">
+  <div class="container" style="max-width:1060px;">
+    <div class="text-center mb-36" data-aos="fade-up">
+      <span class="hero-chip d-inline-flex">
+        <i data-lucide="file-text" class="ic-13"></i>
+        Product Details
+      </span>
+      <h2 class="fw-7 mt-16" style="font-size:clamp(1.3rem,2.5vw,1.8rem);">
+        What <span class="text-gradient-primary">You Get</span>
+      </h2>
+    </div>
+
+    <div class="product-detail-grid">
+
+      <!-- Left: Image -->
+      <div data-aos="fade-up">
+        <div class="d-flex-center" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:20px;padding:40px;min-height:320px;border:1px solid rgba(37,99,235,0.08);">
+          {% if product.display_image %}
+          <img src="{{ product.display_image }}" alt="{{ product.name }}" class="w-100" style="max-height:320px;object-fit:contain;border-radius:12px;">
+          {% else %}
+          <i data-lucide="package" style="width:80px;height:80px;color:var(--primary);opacity:0.3;"></i>
+          {% endif %}
+        </div>
+
+        <!-- About This Product (below image) -->
+        <div class="bg-white card-white mt-20" style="box-shadow:0 4px 24px rgba(0,0,0,0.02);">
+          <h6 class="d-flex ai-center gap-8 fw-7 fs-9 text-primary mb-14">
+            <i data-lucide="align-left" class="ic-16"></i> About This Product
+          </h6>
+          <p class="fs-88 text-secondary lh-18 m-0" style="white-space:pre-line;">{{ product.description }}</p>
+        </div>
+
+        {% if product.has_variants %}
+        <div class="bg-white card-white mt-16">
+          <h6 class="d-flex ai-center gap-8 fw-7 fs-9 mb-14" style="color:#7c3aed;">
+            <i data-lucide="layers" class="ic-16"></i> Available Variants
+          </h6>
+          <div class="r-grid-2-tight">
+            {% for variant in product.variants.all %}
+            <div class="bg-alt d-flex jc-between ai-center p-12-14 br-12">
+              <span class="fw-6 fs-82">{{ variant.name }}</span>
+              <span class="fw-7 fs-82 text-primary">
+                {% if request.session.currency == 'GBP' %}&pound;{{ variant.price_gbp }}{% else %}${{ variant.price_usd }}{% endif %}
+              </span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Right: Price + Cart + Description Cards -->
+      <div data-aos="fade-up" data-aos-delay="100">
+        <!-- Price + Add to Cart Card -->
+        <div class="bg-white shadow-md" style="border:1px solid var(--border);border-radius:20px;padding:32px;margin-bottom:20px;">
+
+          <div class="fw-8" style="font-size:2rem;background:linear-gradient(135deg,#2563eb,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:20px;">
+            {% if request.session.currency == 'GBP' %}&pound;{{ product.price_gbp }}{% else %}${{ product.price_usd }}{% endif %}
+          </div>
+
+          <div class="r-grid-2-tight" style="margin-bottom:24px;">
+            <div class="d-flex ai-center gap-10 bg-alt fs-82" style="padding:12px;border-radius:12px;">
+              <i data-lucide="tag" class="ic-16 flex-shrink-0 text-primary"></i>
+              <span><strong>Category:</strong> {{ product.category.name }}</span>
+            </div>
+            <div class="d-flex ai-center gap-10 bg-alt fs-82" style="padding:12px;border-radius:12px;">
+              <i data-lucide="package" class="ic-16 flex-shrink-0 text-primary"></i>
+              <span><strong>Type:</strong> {{ product.get_product_type_display }}</span>
+            </div>
+            <div class="d-flex ai-center gap-10 bg-alt fs-82" style="padding:12px;border-radius:12px;">
+              <i data-lucide="zap" class="ic-16 flex-shrink-0" style="color:#10b981;"></i>
+              <span><strong>Delivery:</strong> Instant digital</span>
+            </div>
+            <div class="d-flex ai-center gap-10 bg-alt fs-82" style="padding:12px;border-radius:12px;">
+              <i data-lucide="shield-check" class="ic-16 flex-shrink-0" style="color:#10b981;"></i>
+              <span><strong>Payment:</strong> Secure via Stripe</span>
+            </div>
+          </div>
+
+          {% if product.available %}
+          <form action="{% url 'cart:cart_add' product.id %}" method="post">
+            {% csrf_token %}
+            <div class="d-flex ai-center gap-12 mb-16">
+              <label class="fw-6 fs-85">Qty:</label>
+              {{ cart_product_form.quantity }}
+              {{ cart_product_form.override }}
+            </div>
+            <button type="submit" class="hero-btn-primary d-flex jc-center w-100" style="padding:16px 24px;">
+              <i data-lucide="shopping-cart" class="ic-18"></i> Add to Cart
+            </button>
+          </form>
+          {% else %}
+          <div class="text-center fw-6" style="padding:14px;background:#fef2f2;border:1px solid #fecaca;border-radius:12px;color:#dc2626;">
+            <i data-lucide="x-circle" class="ic-16 va-middle" style="margin-right:6px;"></i> Currently Unavailable
+          </div>
+          {% endif %}
+
+          {% if user.is_authenticated %}
+          <div style="margin-top:14px;">
+            {% if in_wishlist %}
+            <a href="{% url 'products:remove_from_wishlist' product.id %}" class="d-flex ai-center jc-center gap-8 fs-85 fw-6 text-deco-none" style="padding:12px;border-radius:12px;border:1.5px solid var(--border);color:var(--text);transition:all 0.2s;">
+              <i data-lucide="heart-off" class="ic-16" style="color:#dc2626;"></i> Remove from Wishlist
+            </a>
+            {% else %}
+            <a href="{% url 'products:add_to_wishlist' product.id %}" class="d-flex ai-center jc-center gap-8 fs-85 fw-6 text-deco-none" style="padding:12px;border-radius:12px;border:1.5px solid var(--border);color:var(--text);transition:all 0.2s;">
+              <i data-lucide="heart" class="ic-16 text-primary"></i> Save to Wishlist
+            </a>
+            {% endif %}
+          </div>
+          {% else %}
+          <p class="fs-82 text-muted text-center" style="margin:16px 0 0;">
+            <i data-lucide="lock" class="ic-14 va-middle" style="margin-right:4px;"></i>
+            <a href="{% url 'users:login' %}?next={{ request.path }}" class="fw-6">Login</a> to save to your wishlist.
+          </p>
+          {% endif %}
+
+        </div>
+
+        <!-- Key Features -->
+        <div class="bg-white shadow-md card-white-md mb-16">
+          <h6 class="d-flex ai-center gap-8 fw-7 fs-9 mb-14" style="color:#10b981;">
+            <i data-lucide="sparkles" class="ic-16"></i> Key Features
+          </h6>
+          <ul class="d-flex fd-column gap-10 list-unstyled">
+            {% for feature in features %}
+            <li class="d-flex ai-start gap-10 fs-82 text-secondary">
+              <i data-lucide="{{ feature.icon|default:'check-circle' }}" class="ic-15 flex-shrink-0 icon-mt2" style="color:#10b981;"></i>
+              <span><strong>{{ feature.title }}</strong> &mdash; {{ feature.description }}</span>
+            </li>
+            {% empty %}
+            <li class="d-flex ai-start gap-10 fs-82 text-secondary">
+              <i data-lucide="check-circle" class="ic-15 flex-shrink-0 icon-mt2" style="color:#10b981;"></i>
+              <span><strong>Instant Download</strong> &mdash; Access your product immediately after purchase</span>
+            </li>
+            <li class="d-flex ai-start gap-10 fs-82 text-secondary">
+              <i data-lucide="check-circle" class="ic-15 flex-shrink-0 icon-mt2" style="color:#10b981;"></i>
+              <span><strong>Lifetime Updates</strong> &mdash; All future updates included at no extra cost</span>
+            </li>
+            <li class="d-flex ai-start gap-10 fs-82 text-secondary">
+              <i data-lucide="check-circle" class="ic-15 flex-shrink-0 icon-mt2" style="color:#10b981;"></i>
+              <span><strong>Documentation</strong> &mdash; Detailed guide and setup instructions included</span>
+            </li>
+            <li class="d-flex ai-start gap-10 fs-82 text-secondary">
+              <i data-lucide="check-circle" class="ic-15 flex-shrink-0 icon-mt2" style="color:#10b981;"></i>
+              <span><strong>Premium Support</strong> &mdash; 24/7 assistance from our expert team</span>
+            </li>
+            <li class="d-flex ai-start gap-10 fs-82 text-secondary">
+              <i data-lucide="check-circle" class="ic-15 flex-shrink-0 icon-mt2" style="color:#10b981;"></i>
+              <span><strong>Secure Checkout</strong> &mdash; 256-bit SSL encrypted payment via Stripe</span>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <!-- What's Included -->
+        <div class="bg-white card-white-md mb-16">
+          <h6 class="d-flex ai-center gap-8 fw-7 fs-9 mb-14" style="color:#d946ef;">
+            <i data-lucide="package" class="ic-16"></i> What's Included
+          </h6>
+          <ul class="d-flex fd-column gap-10 list-unstyled">
+            {% for item in whats_included %}
+            <li class="d-flex ai-start gap-10 fs-82 text-secondary">
+              <i data-lucide="{{ item.icon|default:'file' }}" class="ic-15 flex-shrink-0 icon-mt2" style="color:#d946ef;"></i>
+              <span><strong>{{ item.title }}</strong> &mdash; {{ item.description }}</span>
+            </li>
+            {% empty %}
+            <li class="d-flex ai-start gap-10 fs-82 text-secondary">
+              <i data-lucide="file" class="ic-15 flex-shrink-0 icon-mt2" style="color:#d946ef;"></i>
+              <span><strong>{{ product.get_product_type_display }}</strong> &mdash; Full source files and assets</span>
+            </li>
+            <li class="d-flex ai-start gap-10 fs-82 text-secondary">
+              <i data-lucide="book-open" class="ic-15 flex-shrink-0 icon-mt2" style="color:#d946ef;"></i>
+              <span><strong>Documentation</strong> &mdash; Step-by-step setup guide (PDF)</span>
+            </li>
+            <li class="d-flex ai-start gap-10 fs-82 text-secondary">
+              <i data-lucide="life-buoy" class="ic-15 flex-shrink-0 icon-mt2" style="color:#d946ef;"></i>
+              <span><strong>Support Access</strong> &mdash; Ticket-based priority support</span>
+            </li>
+            {% if product.download_link or product.file %}
+            <li class="d-flex ai-start gap-10 fs-82 text-secondary">
+              <i data-lucide="download" class="ic-15 flex-shrink-0 icon-mt2" style="color:#d946ef;"></i>
+              <span><strong>Download Available</strong> &mdash; Access via your account dashboard</span>
+            </li>
+            {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+
+        <!-- Requirements -->
+        <div class="bg-white" style="border:1px solid var(--border);border-radius:20px;padding:24px;">
+          <h6 class="d-flex ai-center gap-8 fw-7 fs-9 mb-14" style="color:#f97316;">
+            <i data-lucide="monitor" class="ic-16"></i> Requirements
+          </h6>
+          <ul class="d-flex fd-column gap-10 list-unstyled">
+            <li class="d-flex ai-start gap-10 fs-82 text-secondary">
+              <i data-lucide="globe" class="ic-15 flex-shrink-0 icon-mt2" style="color:#f97316;"></i>
+              <span>Modern web browser (Chrome, Firefox, Safari, Edge)</span>
+            </li>
+            <li class="d-flex ai-start gap-10 fs-82 text-secondary">
+              <i data-lucide="wifi" class="ic-15 flex-shrink-0 icon-mt2" style="color:#f97316;"></i>
+              <span>Internet connection for download and activation</span>
+            </li>
+            <li class="d-flex ai-start gap-10 fs-82 text-secondary">
+              <i data-lucide="user" class="ic-15 flex-shrink-0 icon-mt2" style="color:#f97316;"></i>
+              <span>Valid email address for account registration</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========== PRODUCT FEATURES ECO ========== -->
+<section class="section">
+  <div class="container" style="max-width:960px;">
+    <div class="text-center mb-36" data-aos="fade-up">
+      <span class="hero-chip d-inline-flex">
+        <i data-lucide="sparkles" class="ic-13"></i>
+        Why Choose This Product
+      </span>
+      <h2 class="fw-7 mt-16" style="font-size:clamp(1.3rem,2.5vw,1.8rem);">
+        Everything You <span class="text-gradient-primary">Need to Know</span>
+      </h2>
+    </div>
+    <div class="product-features-eco" data-aos="fade-up" data-aos-delay="50">
+      <div class="feature-eco-card">
+        <div class="feature-eco-ic d-flex-center" style="width:44px;height:44px;border-radius:12px;background:#dbeafe;color:var(--primary);margin:0 auto 12px;">
+          <i data-lucide="zap" class="ic-20"></i>
+        </div>
+        <h6 class="fw-7 fs-85" style="margin-bottom:4px;">Instant Access</h6>
+        <p class="fs-75 text-muted m-0">Download your product immediately after purchase. No waiting, no shipping.</p>
+      </div>
+      <div class="feature-eco-card">
+        <div class="feature-eco-ic d-flex-center" style="width:44px;height:44px;border-radius:12px;background:#d1fae5;color:#10b981;margin:0 auto 12px;">
+          <i data-lucide="refresh-cw" class="ic-20"></i>
+        </div>
+        <h6 class="fw-7 fs-85" style="margin-bottom:4px;">Free Updates</h6>
+        <p class="fs-75 text-muted m-0">Lifetime access to future updates and improvements at no extra cost.</p>
+      </div>
+      <div class="feature-eco-card">
+        <div class="feature-eco-ic d-flex-center" style="width:44px;height:44px;border-radius:12px;background:#fce7f3;color:#d946ef;margin:0 auto 12px;">
+          <i data-lucide="shield-check" class="ic-20"></i>
+        </div>
+        <h6 class="fw-7 fs-85" style="margin-bottom:4px;">Secure Checkout</h6>
+        <p class="fs-75 text-muted m-0">256-bit SSL encryption and Stripe-powered payments for your safety.</p>
+      </div>
+      <div class="feature-eco-card">
+        <div class="feature-eco-ic d-flex-center" style="width:44px;height:44px;border-radius:12px;background:#fff7ed;color:#f97316;margin:0 auto 12px;">
+          <i data-lucide="headphones" class="ic-20"></i>
+        </div>
+        <h6 class="fw-7 fs-85" style="margin-bottom:4px;">24/7 Support</h6>
+        <p class="fs-75 text-muted m-0">Our AI assistant and support team are always available to help you.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== REVIEWS ========== -->
+<section class="section">
+  <div class="container" style="max-width:960px;">
+    <div data-aos="fade-up">
+      <h5 class="fw-7 d-flex ai-center gap-8 mb-24">
+        <i data-lucide="star" class="ic-18 text-primary"></i> Customer Reviews
+        <span class="fs-75 fw-6" style="background:var(--primary-50);color:var(--primary);padding:2px 10px;border-radius:20px;margin-left:4px;">{{ reviews|length }}</span>
+      </h5>
+
+      {% if reviews %}
+      <div class="d-grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:32px;">
+        {% for review in reviews %}
+        <div class="why-card bg-white" style="border:1px solid var(--border);border-radius:16px;padding:20px;">
+          <div class="d-flex jc-between ai-start" style="margin-bottom:10px;">
+            <div>
+              <div class="fw-7 fs-85">{{ review.user.username }}</div>
+              <div class="fs-72 text-muted">{{ review.created_at|date:"M d, Y" }}</div>
+            </div>
+            <div class="d-flex gap-2">
+              {% for i in "12345" %}
+                {% if forloop.counter <= review.rating %}
+                <i data-lucide="star" class="ic-14" style="fill:#f59e0b;color:#f59e0b;"></i>
+                {% else %}
+                <i data-lucide="star" class="ic-14" style="color:#d1d5db;"></i>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          <p class="fs-82 text-secondary lh-16 m-0">{{ review.comment }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center bg-alt" style="padding:48px 20px;border-radius:16px;margin-bottom:32px;">
+        <i data-lucide="message-square" class="ic-40 text-muted opacity-30" style="margin-bottom:12px;"></i>
+        <p class="text-muted m-0">No reviews yet. Be the first to review this product!</p>
+      </div>
+      {% endif %}
+
+      {% if user.is_authenticated %}
+      <div class="bg-white card-white max-w-520" data-aos="fade-up">
+        <h5 class="fw-7 d-flex ai-center gap-8 fs-95 mb-16">
+          <i data-lucide="edit" class="ic-16 text-primary"></i> Write a Review
+        </h5>
+        <form action="{% url 'products:add_review' product.id %}" method="post">
+          {% csrf_token %}
+          <div class="mb-14">
+            <label class="fw-6 fs-82" style="margin-bottom:6px;display:block;">Rating (1-5)</label>
+            {{ review_form.rating }}
+          </div>
+          <div class="mb-16">
+            <label class="fw-6 fs-82" style="margin-bottom:6px;display:block;">Your Review</label>
+            {{ review_form.comment }}
+          </div>
+          <button type="submit" class="hero-btn-primary" style="padding:12px 24px;">
+            <i data-lucide="send" class="ic-15"></i> Submit Review
+          </button>
+        </form>
+      </div>
+      {% else %}
+      <p class="fs-85 text-muted">
+        <a href="{% url 'users:login' %}?next={{ request.path }}" class="fw-6">Login</a> to write a review.
+      </p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- ========== RELATED PRODUCTS ========== -->
+{% if related_products %}
+<section class="section" style="padding-bottom:var(--space-12);">
+  <div class="container" style="max-width:1060px;">
+    <div data-aos="fade-up">
+      <h5 class="fw-7 d-flex ai-center gap-8 mb-24">
+        <i data-lucide="package" class="ic-18 text-primary"></i> You Might Also Like
+      </h5>
+      <div class="store-grid">
+        {% with currency=request.session.currency %}
+        {% for related in related_products %}
+        <div data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'0' }}5">
+          {% include 'products/_product_card.html' with product=related currency=currency %}
+        </div>
+        {% endfor %}
+        {% endwith %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<style>
+.qty-control input[type="number"], form input[type="number"] {
+  width: 60px; padding:10px 12px; border:1.5px solid var(--border); border-radius:10px;
+  background:var(--bg-alt); font-size:.88rem; font-weight:600; outline:none; text-align:center;
+  -moz-appearance:textfield;
+}
+.qty-control input[type="number"]::-webkit-outer-spin-button,
+.qty-control input[type="number"]::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+form input[type="number"]:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(37,99,235,0.1); background:var(--bg); }
+form select, #id_rating, #id_comment { width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:12px; background:var(--bg-alt); font-size:.88rem; outline:none; transition:all 0.2s; }
+form select:focus, #id_rating:focus, #id_comment:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(37,99,235,0.1); background:var(--bg); }
+#id_comment { resize:vertical; min-height:80px; }
+</style>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}Analytics Dashboard — Mac GunJon{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+  <h1 class="fw-bold mb-4">
+    <i data-lucide="bar-chart-3" class="ic-28 va-middle mr-2 text-error"></i>Analytics Dashboard
+  </h1>
+
+  <!-- Stats Cards -->
+  <div class="row g-3 mb-5">
+    <div class="col-md-3">
+      <div class="stat-card" data-aos="fade-up" data-aos-delay="0">
+        <div class="stat-icon" style="background:#fee2e2;">
+          <i data-lucide="shopping-bag" class="ic-22 text-error"></i>
+        </div>
+        <p class="stat-value text-error" data-count="{{ total_orders_30d }}">{{ total_orders_30d }}</p>
+        <p class="stat-label">Orders (30 days)</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+        <div class="stat-icon" style="background:#d1fae5;">
+          <i data-lucide="dollar-sign" class="ic-22 text-success"></i>
+        </div>
+        <p class="stat-value text-success">${{ total_revenue_usd|floatformat:0|intcomma }}</p>
+        <p class="stat-label">Revenue USD (30 days)</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+        <div class="stat-icon" style="background:#dbeafe;">
+          <i data-lucide="users" class="ic-22 text-primary"></i>
+        </div>
+        <p class="stat-value text-primary" data-count="{{ new_users_30d }}">{{ new_users_30d }}</p>
+        <p class="stat-label">New Users (30 days)</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
+        <div class="stat-icon" style="background:#fef3c7;">
+          <i data-lucide="box" class="ic-22 text-warning"></i>
+        </div>
+        <p class="stat-value text-warning">{{ total_products }}</p>
+        <p class="stat-label">Total Products</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Top Products -->
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm" data-aos="fade-up">
+        <div class="card-header bg-white border-bottom">
+          <h5 class="fw-bold mb-0">
+            <i data-lucide="trending-up" class="ic-18 va-middle mr-2"></i>Top Products
+          </h5>
+        </div>
+        <div class="card-body p-0">
+          <table class="table mb-0">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Orders</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for product in top_products %}
+              <tr>
+                <td>{{ product.name }}</td>
+                <td>{{ product.order_count }}</td>
+                <td>${{ product.price_usd }}</td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="3" class="text-center text-muted">No data yet</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm" data-aos="fade-up" data-aos-delay="100">
+        <div class="card-header bg-white border-bottom">
+          <h5 class="fw-bold mb-0">
+            <i data-lucide="pie-chart" class="ic-18 va-middle mr-2"></i>Quick Stats
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+            <span>Orders (7 days)</span>
+            <strong>{{ total_orders_7d }}</strong>
+          </div>
+          <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+            <span>New Users (7 days)</span>
+            <strong>{{ new_users_7d }}</strong>
+          </div>
+          <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+            <span>Total Users</span>
+            <strong>{{ total_users }}</strong>
+          </div>
+          <div class="d-flex justify-content-between align-items-center py-2">
+            <span>Total Products</span>
+            <strong>{{ total_products }}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

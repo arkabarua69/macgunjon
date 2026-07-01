@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Access Denied - Mac GunJon{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center" style="min-height:60vh;">
+    <div class="row justify-content-center align-items-center" style="min-height:60vh;">
+        <div class="col-md-6">
+            <div class="fw-8 opacity-20" style="font-size:6rem;color:var(--red);line-height:1;">403</div>
+            <h1 class="fw-bold mb-3">Access Denied</h1>
+            <p class="text-muted mb-4">You do not have permission to access this page. If you believe this is a mistake, please contact support.</p>
+            <a href="{% url 'products:product_list' %}" class="btn btn-danger btn-lg rounded-pill px-4">
+                <i data-lucide="home" class="ic-18 va-middle" style="margin-right:.3rem;"></i>Go Home
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

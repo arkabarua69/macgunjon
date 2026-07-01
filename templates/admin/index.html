@@ -1,0 +1,143 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}Dashboard | Mac GunJon Admin{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<div class="admin-hero">
+  <div class="admin-hero-top">
+    <div class="admin-hero-left">
+      <div class="admin-hero-icon"><i class="fas fa-th-large"></i></div>
+      <div>
+        <h1>Welcome back, {{ user.get_short_name|default:"Admin" }}</h1>
+        <p>Here's what's happening with your store today.</p>
+      </div>
+    </div>
+  </div>
+  <div class="admin-hero-meta">
+    <a href="{% url 'admin:products_product_changelist' %}" class="admin-hero-eco"><i class="fas fa-box"></i> Products <span class="eco-count">{{ product_count|default:"0" }}</span></a>
+    <a href="{% url 'admin:orders_order_changelist' %}" class="admin-hero-eco"><i class="fas fa-shopping-cart"></i> Orders <span class="eco-count">{{ order_count|default:"0" }}</span></a>
+    <a href="{% url 'admin:users_user_changelist' %}" class="admin-hero-eco"><i class="fas fa-users"></i> Users <span class="eco-count">{{ user_count|default:"0" }}</span></a>
+    <a href="{% url 'admin:blog_blogpost_changelist' %}" class="admin-hero-eco"><i class="fas fa-blog"></i> Blog</a>
+    <a href="{% url 'admin:products_category_changelist' %}" class="admin-hero-eco"><i class="fas fa-tags"></i> Categories</a>
+    <a href="{% url 'admin:pages_contactmessage_changelist' %}" class="admin-hero-eco"><i class="fas fa-envelope"></i> Contacts</a>
+    <a href="{% url 'admin:products_newsletter_changelist' %}" class="admin-hero-eco"><i class="fas fa-bell"></i> Subscribers <span class="eco-count">{{ subscriber_count|default:"0" }}</span></a>
+    <span class="admin-hero-time"><i class="fas fa-clock"></i> Last login: {{ user.last_login|date:"M d, Y H:i"|default:"Never" }}</span>
+  </div>
+</div>
+
+<!-- Stats (Velzon-style stat cards) -->
+<div class="dash-hero-stats">
+  <a href="{% url 'admin:products_product_changelist' %}" class="dash-stat-row">
+    <div class="dsr-top"><div class="dsr-icon" style="background:var(--info-subtle);color:var(--info);"><i class="fas fa-box"></i></div><span class="dsr-label">Products</span></div>
+    <div class="dsr-num">{{ product_count|default:"0" }}</div>
+    <div class="dsr-sub"><i class="fas fa-arrow-right admin-fs-11 text-success"></i> Total products</div>
+  </a>
+  <a href="{% url 'admin:orders_order_changelist' %}" class="dash-stat-row">
+    <div class="dsr-top"><div class="dsr-icon" style="background:var(--success-subtle);color:var(--success);"><i class="fas fa-shopping-cart"></i></div><span class="dsr-label">Orders</span></div>
+    <div class="dsr-num">{{ order_count|default:"0" }}</div>
+    <div class="dsr-sub"><i class="fas fa-arrow-right admin-fs-11 text-success"></i> Total orders</div>
+  </a>
+  <a href="{% url 'admin:users_user_changelist' %}" class="dash-stat-row">
+    <div class="dsr-top"><div class="dsr-icon" style="background:var(--warning-subtle);color:var(--warning);"><i class="fas fa-users"></i></div><span class="dsr-label">Users</span></div>
+    <div class="dsr-num">{{ user_count|default:"0" }}</div>
+    <div class="dsr-sub"><i class="fas fa-arrow-right admin-fs-11 text-success"></i> Registered users</div>
+  </a>
+  <a href="{% url 'admin:products_newsletter_changelist' %}" class="dash-stat-row">
+    <div class="dsr-top"><div class="dsr-icon" style="background:rgba(236,72,153,0.1);color:#ec4899;"><i class="fas fa-envelope"></i></div><span class="dsr-label">Subscribers</span></div>
+    <div class="dsr-num">{{ subscriber_count|default:"0" }}</div>
+    <div class="dsr-sub"><i class="fas fa-arrow-right admin-fs-11 text-success"></i> Newsletter subscribers</div>
+  </a>
+</div>
+
+<!-- Quick Actions + Recent Activity -->
+<div class="dash-two-col">
+  <div class="dash-section">
+    <div class="dash-section-head"><h2>Quick Actions</h2></div>
+    <div class="dash-quick-grid">
+      <a href="{% url 'admin:products_product_add' %}" class="dash-qi"><div class="dash-qi-icon" style="background:var(--info-subtle);color:var(--info);"><i class="fas fa-plus"></i></div><div><h5>Add Product</h5><p>Create new listing</p></div></a>
+      <a href="{% url 'admin:products_category_add' %}" class="dash-qi"><div class="dash-qi-icon" style="background:var(--success-subtle);color:var(--success);"><i class="fas fa-folder-plus"></i></div><div><h5>Add Category</h5><p>Organize products</p></div></a>
+      <a href="{% url 'admin:blog_blogpost_add' %}" class="dash-qi"><div class="dash-qi-icon" style="background:rgba(236,72,153,0.1);color:#ec4899;"><i class="fas fa-pen-fancy"></i></div><div><h5>Write Blog Post</h5><p>Publish content</p></div></a>
+      <a href="{% url 'admin:coupons_coupon_add' %}" class="dash-qi"><div class="dash-qi-icon" style="background:var(--warning-subtle);color:var(--warning);"><i class="fas fa-ticket-alt"></i></div><div><h5>Create Coupon</h5><p>Add discount code</p></div></a>
+      <a href="{% url 'admin:orders_order_changelist' %}" class="dash-qi"><div class="dash-qi-icon" style="background:rgba(124,58,237,0.1);color:#7c3aed;"><i class="fas fa-clipboard-list"></i></div><div><h5>Manage Orders</h5><p>Process orders</p></div></a>
+      <a href="{% url 'admin:pages_contactmessage_changelist' %}" class="dash-qi"><div class="dash-qi-icon" style="background:var(--info-subtle);color:#0284c7;"><i class="fas fa-headset"></i></div><div><h5>Support Tickets</h5><p>View messages</p></div></a>
+      <a href="{% url 'admin:users_user_changelist' %}" class="dash-qi"><div class="dash-qi-icon" style="background:rgba(234,88,12,0.1);color:#ea580c;"><i class="fas fa-user-cog"></i></div><div><h5>Manage Users</h5><p>Customer accounts</p></div></a>
+      <a href="{% url 'admin:password_change' %}" class="dash-qi"><div class="dash-qi-icon" style="background:#f1f3f5;color:#64748b;"><i class="fas fa-key"></i></div><div><h5>Change Password</h5><p>Update credentials</p></div></a>
+    </div>
+  </div>
+  <div class="dash-section">
+    <div class="dash-section-head"><h2>Recent Activity</h2></div>
+    {% if admin_log %}
+      {% for entry in admin_log|slice:":8" %}
+      <div class="dash-action-item">
+        <div class="dash-action-dot" {% if entry.is_addition %}style="background:var(--success-subtle);color:var(--success);"{% elif entry.is_change %}style="background:var(--info-subtle);color:var(--info);"{% elif entry.is_deletion %}style="background:var(--error-subtle);color:var(--error);"{% else %}style="background:#f1f3f5;color:#64748b;"{% endif %}>
+          {% if entry.is_addition %}<i class="fas fa-plus"></i>{% elif entry.is_change %}<i class="fas fa-pen"></i>{% elif entry.is_deletion %}<i class="fas fa-trash"></i>{% else %}<i class="fas fa-info"></i>{% endif %}
+        </div>
+        <div class="dash-action-text">
+          <span>{{ entry.object_repr|truncatechars:35 }}</span>
+          <small>{{ entry.action_flag_display }}{% if entry.user %} by {{ entry.user }}{% endif %}</small>
+        </div>
+        <div class="dash-action-time">{{ entry.action_time|timesince }} ago</div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="dash-empty"><i class="fas fa-clock"></i><p>No recent actions yet.</p></div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Bottom Stats -->
+<div class="dash-bottom-grid">
+  <a href="{% url 'admin:products_review_changelist' %}" class="dash-stat-row"><div class="dsr-top"><div class="dsr-icon" style="background:rgba(124,58,237,0.1);color:#7c3aed;"><i class="fas fa-star"></i></div><span class="dsr-label">Reviews</span></div><div class="dsr-num">{{ review_count|default:"0" }}</div><div class="dsr-sub">Customer reviews</div></a>
+  <a href="{% url 'admin:chatbot_chatmessage_changelist' %}" class="dash-stat-row"><div class="dsr-top"><div class="dsr-icon" style="background:var(--info-subtle);color:#0284c7;"><i class="fas fa-comments"></i></div><span class="dsr-label">Chat Messages</span></div><div class="dsr-num">{{ chat_count|default:"0" }}</div><div class="dsr-sub">Bot conversations</div></a>
+  <a href="{% url 'admin:coupons_coupon_changelist' %}" class="dash-stat-row"><div class="dsr-top"><div class="dsr-icon" style="background:rgba(234,88,12,0.1);color:#ea580c;"><i class="fas fa-ticket-alt"></i></div><span class="dsr-label">Coupons</span></div><div class="dsr-num">{{ coupon_count|default:"0" }}</div><div class="dsr-sub">Active codes</div></a>
+</div>
+
+<!-- All Sections -->
+{% if app_list %}
+<div class="mb-24">
+  <div class="dash-sections-header">
+    <div class="dash-sections-header-left">
+      <div class="dash-sections-header-accent"></div>
+      <h2>All Sections</h2>
+    </div>
+    <span class="dash-sections-badge">{{ app_list|length }} apps</span>
+  </div>
+  <div class="dash-sections-grid">
+    {% for app in app_list %}
+    <div class="dash-app-card">
+      <a href="{{ app.admin_url }}" class="dash-app-card-head">
+        {% with app_idx=forloop.counter0 %}
+        <div class="dash-app-card-icon {% cycle 'dash-app-color-0' 'dash-app-color-1' 'dash-app-color-2' 'dash-app-color-3' 'dash-app-color-4' 'dash-app-color-5' 'dash-app-color-6' 'dash-app-color-7' 'dash-app-color-8' 'dash-app-color-9' %}">
+          {% if app_idx == 0 %}<i class="fas fa-box"></i>{% elif app_idx == 1 %}<i class="fas fa-shopping-cart"></i>{% elif app_idx == 2 %}<i class="fas fa-users"></i>{% elif app_idx == 3 %}<i class="fas fa-blog"></i>{% elif app_idx == 4 %}<i class="fas fa-tags"></i>{% elif app_idx == 5 %}<i class="fas fa-envelope"></i>{% elif app_idx == 6 %}<i class="fas fa-ticket-alt"></i>{% elif app_idx == 7 %}<i class="fas fa-comments"></i>{% elif app_idx == 8 %}<i class="fas fa-star"></i>{% else %}<i class="fas fa-cube"></i>{% endif %}
+        </div>
+        {% endwith %}
+        <div class="dash-app-card-info"><h3>{{ app.name }}</h3><p>{{ app.models|length }} model{{ app.models|length|pluralize }}</p></div>
+        <div class="dash-app-card-badge">{{ app.models|length }}</div>
+      </a>
+      {% if app.models %}
+      <div class="dash-app-card-list">
+        {% for model in app.models %}
+        <a href="{{ model.admin_url }}" class="dash-app-model-link"><span>{{ model.name }}</span><i class="fas fa-chevron-right model-arrow"></i></a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.dash-stat-row, .dash-section, .dash-qi').forEach(function(el, i) {
+  el.style.opacity = '0'; el.style.transform = 'translateY(10px)';
+  el.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+  setTimeout(function() { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; }, 50 + i * 30);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: 'Arial', sans-serif; background: #f4f4f4; margin: 0; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,.1); }
+    .header { background: #2563eb; color: #fff; padding: 30px; text-align: center; }
+    .header h1 { margin: 0; font-size: 24px; }
+    .content { padding: 30px; }
+    .product-item { background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #2563eb; }
+    .product-item h3 { margin: 0 0 5px 0; font-size: 16px; }
+    .btn { display: inline-block; background: #2563eb; color: #fff; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px 0; }
+    .footer { text-align: center; padding: 20px; font-size: 12px; color: #999; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Your Products Are Ready!</h1>
+    </div>
+    <div class="content">
+      <p>Great news! Your digital products for Order #{{ order.id }} are ready for download.</p>
+
+      {% for item in items %}
+      <div class="product-item">
+        <h3>{{ item.product.name }}</h3>
+        {% if item.product.download_link %}
+        <a href="{{ item.product.download_link }}" class="btn">Download</a>
+        {% elif item.product.file %}
+        <a href="{{ SITE_URL }}{% url 'orders:order_detail' order.id %}" class="btn">View & Download</a>
+        {% endif %}
+      </div>
+      {% endfor %}
+
+      <p style="margin-top:20px;">If you have any issues with your download, please contact us at support@macgunjon.com</p>
+    </div>
+    <div class="footer">
+      <p>Mac GunJon - Is Bot | support@macgunjon.com</p>
+    </div>
+  </div>
+</body>
+</html>

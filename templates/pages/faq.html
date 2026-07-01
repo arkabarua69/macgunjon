@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}FAQ — Mac GunJon{% endblock %}
+
+{% block content %}
+
+<!-- ========== FAQ HERO ========== -->
+<section class="home-hero">
+  <canvas id="canvas-particles"></canvas>
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-content">
+        <div class="hero-chip">
+          <i data-lucide="help-circle" class="ic-14"></i>
+          Help Center
+        </div>
+        <h1 class="hero-title">
+          Frequently Asked <strong>Questions</strong>
+        </h1>
+        <p class="hero-desc">
+          Find answers to common questions about our products, payments, and services.
+        </p>
+        <div class="hero-actions">
+          <a href="{% url 'products:product_list' %}" class="hero-btn-primary">
+            Browse Products <i data-lucide="arrow-right"></i>
+          </a>
+          <a href="{% url 'pages:contact' %}" class="hero-btn-ghost">
+            Ask a Question <i data-lucide="message-circle"></i>
+          </a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="faq-hero-eco">
+          <div class="faq-eco-hub">
+            <i data-lucide="help-circle"></i>
+          </div>
+          <div class="faq-eco-ring ring-1"></div>
+          <div class="faq-eco-ring ring-2"></div>
+          <div class="faq-eco-card fc-1">
+            <div class="fc-icon" style="background:#dbeafe;color:#3b82f6;"><i data-lucide="shopping-bag"></i></div>
+            <div class="fc-text"><strong>Orders</strong><span>Tracking & status</span></div>
+          </div>
+          <div class="faq-eco-card fc-2">
+            <div class="fc-icon" style="background:#fce7f3;color:#d946ef;"><i data-lucide="credit-card"></i></div>
+            <div class="fc-text"><strong>Payments</strong><span>Stripe & security</span></div>
+          </div>
+          <div class="faq-eco-card fc-3">
+            <div class="fc-icon" style="background:#d1fae5;color:#10b981;"><i data-lucide="download"></i></div>
+            <div class="fc-text"><strong>Delivery</strong><span>Instant access</span></div>
+          </div>
+          <div class="faq-eco-card fc-4">
+            <div class="fc-icon" style="background:#fef3c7;color:#f59e0b;"><i data-lucide="message-circle"></i></div>
+            <div class="fc-text"><strong>Support</strong><span>24/7 live chat</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FAQ ACCORDION ========== -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-chip">FAQ</div>
+      <h2 class="section-title">Everything You Need to <strong>Know</strong></h2>
+      <p class="section-desc">Quick answers to the most common questions we get asked.</p>
+    </div>
+
+    <div class="section-container-narrow">
+      <div class="accordion" id="faqAccordion">
+        {% for faq in faqs %}
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'1' }}00">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold{% if not forloop.first %} collapsed{% endif %}" data-bs-toggle="collapse" data-bs-target="#faq{{ forloop.counter }}">
+              {{ faq.question }}
+            </button>
+          </h2>
+          <div id="faq{{ forloop.counter }}" class="accordion-collapse collapse{% if forloop.first %} show{% endif %}" data-bs-parent="#faqAccordion">
+            <div class="accordion-body text-muted">
+              {{ faq.answer }}
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="50">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold" data-bs-toggle="collapse" data-bs-target="#faq1">
+              How do I receive my purchased products?
+            </button>
+          </h2>
+          <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+            <div class="accordion-body text-muted">
+              All products are delivered digitally. After successful payment, you will receive instant access to download links or files through your order confirmation page and via email.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="100">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold collapsed" data-bs-toggle="collapse" data-bs-target="#faq2">
+              What payment methods do you accept?
+            </button>
+          </h2>
+          <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body text-muted">
+              We accept all major credit and debit cards through Stripe, our secure payment processor. All transactions are encrypted and secure.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="150">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold collapsed" data-bs-toggle="collapse" data-bs-target="#faq3">
+              Can I get a refund?
+            </button>
+          </h2>
+          <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body text-muted">
+              Due to the digital nature of our products, all sales are final. However, if you encounter technical issues with your purchase, please contact our support team and we will do our best to resolve the issue.
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SUPPORT ========== -->
+<section class="section" id="support">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-chip">Need Help?</div>
+      <h2 class="section-title">We're Here to <strong>Help</strong></h2>
+      <p class="section-desc">Choose the support option that works best for you.</p>
+    </div>
+    <div class="home-trust section-container-wide"">
+      <div class="home-trust-card text-center" data-aos="fade-up" data-aos-delay="50">
+        <div class="home-trust-icon bg-primary-50 text-primary" style="margin:0 auto 16px;">
+          <i data-lucide="headphones" class="ic-24"></i>
+        </div>
+        <h4>Still Have Questions?</h4>
+        <p>Our support team is ready to help you with anything.</p>
+      </div>
+      <div class="home-trust-card text-center" data-aos="fade-up" data-aos-delay="100">
+        <div class="home-trust-icon" style="background:#d1fae5;color:#059669;margin:0 auto 16px;">
+          <i data-lucide="message-circle" class="ic-24"></i>
+        </div>
+        <h4>Live Chat</h4>
+        <p>Chat with our AI assistant for instant answers.</p>
+      </div>
+      <div class="home-trust-card text-center" data-aos="fade-up" data-aos-delay="150">
+        <div class="home-trust-icon" style="background:#fef3c7;color:#d97706;margin:0 auto 16px;">
+          <i data-lucide="mail" class="ic-24"></i>
+        </div>
+        <h4>Email Us</h4>
+        <p>Reach us anytime at <a href="mailto:{{ site_settings.contact_email|default:'support@macgunjon.com' }}">{{ site_settings.contact_email|default:'support@macgunjon.com' }}</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CTA ========== -->
+<section class="home-cta">
+  <div class="container">
+    <div class="home-cta-inner" data-aos="fade-up">
+      <h2>Ready to Get Started?</h2>
+      <p>Browse our store and discover premium digital products.</p>
+      <div class="home-cta-actions">
+        <a href="{% url 'products:product_list' %}" class="hero-btn-primary">
+          Visit Store <i data-lucide="shopping-bag"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

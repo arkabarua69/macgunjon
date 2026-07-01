@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load social_extra %}
+
+{% block title %}Sign In — Mac GunJon{% endblock %}
+
+{% block content %}
+<style>
+.login-grid { display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center; }
+@media (max-width:768px) {
+  .login-grid { grid-template-columns:1fr !important; }
+  .login-eco { display:none !important; }
+}
+</style>
+
+<section class="home-hero" style="padding:clamp(4rem,4vw,5rem) 0;">
+  <canvas id="canvas-particles"></canvas>
+  <div class="container">
+    <div class="login-grid pos-relative z-1">
+
+      <!-- Left: Eco System -->
+      <div class="login-eco" data-aos="fade-up">
+        <div class="hero-chip d-inline-flex mb-5">
+          <i data-lucide="log-in" class="ic-14"></i>
+          Welcome Back
+        </div>
+        <h2 class="fw-8" style="font-size:clamp(1.4rem,2.5vw,1.8rem);line-height:1.2;margin-bottom:8px;">
+          Sign in to <span class="text-gradient-primary">Mac GunJon</span>
+        </h2>
+        <p class="fs-9 text-secondary mb-6" style="max-width:380px;">
+          Access your account, orders, wishlist, and more.
+        </p>
+
+        <div class="store-eco-grid m-0">
+          <div class="store-eco-col">
+            <div class="store-eco-card" data-color="#3b82f6">
+              <div class="store-eco-ic" style="background:#dbeafe;color:#3b82f6;"><i data-lucide="shopping-bag" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Your Orders</h5><p>Track purchases</p></div>
+            </div>
+            <div class="store-eco-card" data-color="#10b981">
+              <div class="store-eco-ic" style="background:#d1fae5;color:#10b981;"><i data-lucide="heart" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Wishlist</h5><p>Saved items</p></div>
+            </div>
+          </div>
+          <div class="store-eco-col store-eco-col-r">
+            <div class="store-eco-card" data-color="#d946ef">
+              <div class="store-eco-ic" style="background:#fce7f3;color:#d946ef;"><i data-lucide="download" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Downloads</h5><p>Your purchases</p></div>
+            </div>
+            <div class="store-eco-card" data-color="#f97316">
+              <div class="store-eco-ic" style="background:#fff7ed;color:#f97316;"><i data-lucide="headphones" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Support</h5><p>24/7 assistance</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Login Form -->
+      <div data-aos="fade-up" data-aos-delay="100">
+        <div class="bg-white shadow-sm border br-20" style="padding:36px 32px;">
+          <div class="text-center mb-6">
+            <div class="d-flex-center br-14 text-white" style="width:48px;height:48px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);margin:0 auto 12px;box-shadow:0 4px 12px rgba(37,99,235,0.25);">
+              <i data-lucide="log-in" class="ic-22"></i>
+            </div>
+            <h4 class="fw-8 mb-1">Sign In</h4>
+            <p class="fs-85 text-muted m-0">Access your account &amp; orders</p>
+          </div>
+
+          {% if form.non_field_errors %}
+          <div class="d-flex ai-center gap-10 fs-85 br-12 mb-20" style="background:#fef2f2;border:1px solid #fecaca;padding:12px 14px;color:#b91c1c;">
+            <i data-lucide="alert-circle" class="ic-16 flex-shrink-0"></i>{{ form.non_field_errors }}
+          </div>
+          {% endif %}
+
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="mb-4">
+              <label class="fw-6 fs-82 mb-2 d-block">Email</label>
+              <input type="email" name="username" value="{{ form.username.value|default:'' }}" required class="w-100 radius bg-alt fs-88 form-input transition-all">
+              {% if form.username.errors %}<div class="text-error fs-78 mt-1">{{ form.username.errors }}</div>{% endif %}
+            </div>
+            <div class="mb-2">
+              <label class="fw-6 fs-82 mb-2 d-block">Password</label>
+              <input type="password" name="password" required class="w-100 radius bg-alt fs-88 form-input transition-all">
+              {% if form.password.errors %}<div class="text-error fs-78 mt-1">{{ form.password.errors }}</div>{% endif %}
+            </div>
+            <div class="text-right mb-5">
+              <a href="{% url 'users:password_reset' %}" class="fs-8 text-muted">Forgot password?</a>
+            </div>
+
+            {% if request.GET.next %}<input type="hidden" name="next" value="{{ request.GET.next }}">{% endif %}
+            <button type="submit" class="hero-btn-primary w-100 d-flex-center">
+              <i data-lucide="log-in" class="ic-16"></i> Sign In
+            </button>
+          </form>
+
+          {% safe_provider_login_url 'google' as google_login_url %}
+          {% safe_provider_login_url 'facebook' as facebook_login_url %}
+          <div class="d-flex ai-center gap-12 my-24">
+            <div class="flex-1 divider"></div>
+            <span class="fs-78 text-muted whitespace-nowrap">or continue with</span>
+            <div class="flex-1 divider"></div>
+          </div>
+
+          <div class="d-grid gap-10">
+            {% if google_login_url %}
+            <a href="{{ google_login_url }}?next={{ request.GET.next|default:'/' }}" class="d-flex-center gap-10 fs-85 fw-6 text-deco-none br-12 transition-all" style="padding:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);">
+              <svg class="ic-18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+              Sign in with Google
+            </a>
+            {% endif %}
+            {% if facebook_login_url %}
+            <a href="{{ facebook_login_url }}?next={{ request.GET.next|default:'/' }}" class="d-flex-center gap-10 fs-85 fw-6 text-deco-none br-12 transition-all" style="padding:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);">
+              <svg class="ic-18" viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              Sign in with Facebook
+            </a>
+            {% endif %}
+          </div>
+
+          <div class="text-center mt-6">
+            <span class="fs-85 text-muted">Don't have an account?</span>
+            <a href="{% url 'users:register' %}" class="fw-7 ml-4">Create one &rarr;</a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+.login-grid input:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  background: var(--bg) !important;
+}
+.login-grid a[href*="google"]:hover,
+.login-grid a[href*="facebook"]:hover {
+  background: var(--primary-50) !important;
+  border-color: rgba(37,99,235,0.2) !important;
+}
+</style>
+{% endblock %}

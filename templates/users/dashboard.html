@@ -1,0 +1,348 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Dashboard — Mac GunJon{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="dash-hero">
+  <canvas id="canvas-particles"></canvas>
+  <div class="container">
+    <div class="dash-hero-inner">
+      <div>
+        <div class="dash-hero-badge" data-aos="fade-up">
+          <i data-lucide="layout-dashboard"></i>
+          My Dashboard
+        </div>
+        <h1 class="dash-hero-title" data-aos="fade-up" data-aos-delay="100">
+          Welcome back, <span class="dash-grad">{{ user.username }}</span>
+        </h1>
+        <p class="dash-hero-desc" data-aos="fade-up" data-aos-delay="200">
+          Manage your orders, wishlist, and account settings from one place.
+        </p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="150">
+        <div class="dash-hero-stats">
+          <div class="dash-hero-col">
+            <div class="dash-hero-stat">
+              <div class="dash-hero-stat-icon" style="background:#dbeafe;color:#3b82f6;">
+                <i data-lucide="shopping-bag"></i>
+              </div>
+              <div class="dash-hero-stat-text">
+                <h5>{{ total_orders }} Order{{ total_orders|pluralize }}</h5>
+                <p>All time purchases</p>
+              </div>
+            </div>
+            <div class="dash-hero-stat">
+              <div class="dash-hero-stat-icon" style="background:#d1fae5;color:#10b981;">
+                <i data-lucide="check-circle"></i>
+              </div>
+              <div class="dash-hero-stat-text">
+                <h5>{{ completed_orders }} Completed</h5>
+                <p>{{ completed_percentage }}% success rate</p>
+              </div>
+            </div>
+          </div>
+          <div class="dash-hero-col dash-hero-col-r">
+            <div class="dash-hero-stat">
+              <div class="dash-hero-stat-icon" style="background:#fce7f3;color:#d946ef;">
+                <i data-lucide="heart"></i>
+              </div>
+              <div class="dash-hero-stat-text">
+                <h5>{{ wishlist_count }} Wishlist</h5>
+                <p>Saved products</p>
+              </div>
+            </div>
+            <div class="dash-hero-stat">
+              <div class="dash-hero-stat-icon" style="background:#fff7ed;color:#f97316;">
+                <i data-lucide="wallet"></i>
+              </div>
+              <div class="dash-hero-stat-text">
+                <h5>${{ total_spent }}</h5>
+                <p>Total spent</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="dash-section">
+  <div class="container">
+    <div class="dash-layout">
+
+      <aside class="dash-sidebar" data-aos="fade-right">
+        <div class="dash-sidebar-user">
+          <div class="dash-avatar">
+            {% if user.avatar %}
+              <img src="{{ user.avatar.url }}" alt="{{ user.username }}">
+            {% else %}
+              {{ user.username|first|upper }}
+            {% endif %}
+          </div>
+          <div class="dash-user-meta">
+            <h6>{{ user.username }}</h6>
+            <span>{{ user.email|truncatechars:28 }}</span>
+          </div>
+        </div>
+
+        <nav class="dash-nav">
+          <a href="{% url 'users:dashboard' %}" class="dash-nav-link active">
+            <i data-lucide="layout-dashboard"></i> Dashboard
+          </a>
+          <a href="{% url 'users:profile_edit' %}" class="dash-nav-link">
+            <i data-lucide="settings"></i> Edit Profile
+          </a>
+          <a href="{% url 'users:address_list' %}" class="dash-nav-link">
+            <i data-lucide="map-pin"></i> Addresses
+            {% if address_count %}<span class="dash-badge dash-badge-blue">{{ address_count }}</span>{% endif %}
+          </a>
+          <a href="{% url 'users:session_list' %}" class="dash-nav-link">
+            <i data-lucide="monitor"></i> Sessions
+            {% if session_count %}<span class="dash-badge dash-badge-amber">{{ session_count }}</span>{% endif %}
+          </a>
+          <a href="{% url 'products:wishlist' %}" class="dash-nav-link">
+            <i data-lucide="heart"></i> Wishlist
+            {% if wishlist_count %}<span class="dash-badge dash-badge-pink">{{ wishlist_count }}</span>{% endif %}
+          </a>
+        </nav>
+
+        <div class="dash-nav-divider"></div>
+
+        <nav class="dash-nav">
+          <a href="{% url 'users:password_reset' %}" class="dash-nav-link">
+            <i data-lucide="key"></i> Change Password
+          </a>
+          <form method="post" action="{% url 'users:logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="dash-nav-link dash-nav-danger">
+              <i data-lucide="log-out"></i> Logout
+            </button>
+          </form>
+        </nav>
+      </aside>
+
+      <main class="dash-main">
+
+        <div class="dash-stats" data-aos="fade-up" data-aos-delay="100">
+          <a href="{% url 'users:dashboard' %}" class="dash-stat-card dash-stat-blue">
+            <div class="dash-stat-icon"><i data-lucide="shopping-bag"></i></div>
+            <div class="dash-stat-body">
+              <span class="dash-stat-num">{{ total_orders }}</span>
+              <span class="dash-stat-label">Total Orders</span>
+            </div>
+          </a>
+          <a href="{% url 'products:wishlist' %}" class="dash-stat-card dash-stat-pink">
+            <div class="dash-stat-icon"><i data-lucide="heart"></i></div>
+            <div class="dash-stat-body">
+              <span class="dash-stat-num">{{ wishlist_count }}</span>
+              <span class="dash-stat-label">Wishlist Items</span>
+            </div>
+          </a>
+          <div class="dash-stat-card dash-stat-green">
+            <div class="dash-stat-icon"><i data-lucide="wallet"></i></div>
+            <div class="dash-stat-body">
+              <span class="dash-stat-num">${{ total_spent }}</span>
+              <span class="dash-stat-label">Total Spent</span>
+            </div>
+          </div>
+          <div class="dash-stat-card dash-stat-amber">
+            <div class="dash-stat-icon">
+              {% if newsletter_subscribed %}<i data-lucide="mail-check"></i>{% else %}<i data-lucide="mail"></i>{% endif %}
+            </div>
+            <div class="dash-stat-body">
+              <span class="dash-stat-num">{% if newsletter_subscribed %}Active{% else %}None{% endif %}</span>
+              <span class="dash-stat-label">Newsletter</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-section p-0" data-aos="fade-up" data-aos-delay="150">
+          <h6 class="dash-section-title">
+            <i data-lucide="zap"></i> Quick Actions
+          </h6>
+          <div class="dash-actions">
+            <a href="{% url 'users:profile_edit' %}" class="dash-action">
+              <div class="dash-action-icon" style="background:#eff6ff;color:#2563eb;"><i data-lucide="user"></i></div>
+              <div class="dash-action-text"><h6>Edit Profile</h6><span>Update your info</span></div>
+            </a>
+            <a href="{% url 'users:address_list' %}" class="dash-action">
+              <div class="dash-action-icon" style="background:#dbeafe;color:#2563eb;"><i data-lucide="map-pin"></i></div>
+              <div class="dash-action-text"><h6>Addresses</h6><span>{{ address_count }} saved</span></div>
+            </a>
+            <a href="{% url 'products:wishlist' %}" class="dash-action">
+              <div class="dash-action-icon" style="background:#fce7f3;color:#d946ef;"><i data-lucide="heart"></i></div>
+              <div class="dash-action-text"><h6>Wishlist</h6><span>{{ wishlist_count }} items</span></div>
+            </a>
+            <a href="{% url 'users:session_list' %}" class="dash-action">
+              <div class="dash-action-icon" style="background:#d1fae5;color:#10b981;"><i data-lucide="monitor"></i></div>
+              <div class="dash-action-text"><h6>Sessions</h6><span>{{ session_count }} active</span></div>
+            </a>
+            <a href="{% url 'products:product_list' %}" class="dash-action">
+              <div class="dash-action-icon" style="background:#fef3c7;color:#d97706;"><i data-lucide="store"></i></div>
+              <div class="dash-action-text"><h6>Browse Store</h6><span>Shop products</span></div>
+            </a>
+            <a href="{% url 'users:password_reset' %}" class="dash-action">
+              <div class="dash-action-icon" style="background:#ede9fe;color:#7c3aed;"><i data-lucide="key"></i></div>
+              <div class="dash-action-text"><h6>Security</h6><span>Change password</span></div>
+            </a>
+          </div>
+        </div>
+
+        <div class="dash-row" data-aos="fade-up" data-aos-delay="200">
+
+          <div class="dash-row-main">
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <div class="dash-card-icon" style="background:#eff6ff;color:#2563eb;"><i data-lucide="package"></i></div>
+                <div class="dash-card-meta">
+                  <h5>Recent Orders</h5>
+                  <p>Your latest purchases</p>
+                </div>
+                {% if total_orders > 5 %}
+                <span class="dash-badge dash-badge-blue ml-auto">{{ total_orders }} total</span>
+                {% endif %}
+              </div>
+
+              {% if recent_orders %}
+              <div class="dash-card-body dash-order-list">
+                {% for order in recent_orders %}
+                <div class="dash-order">
+                  <div class="dash-order-left">
+                    <div class="dash-order-icon"><i data-lucide="package"></i></div>
+                    <div class="dash-order-info">
+                      <h6>Order #{{ order.id }}</h6>
+                      <span>{{ order.created_at|date:"M d, Y" }} &middot; {{ order.items.count }} item{{ order.items.count|pluralize }}</span>
+                    </div>
+                  </div>
+                  <div class="dash-order-right">
+                    <span class="dash-order-amount">{% if order.currency == 'GBP' %}&pound;{% else %}${% endif %}{{ order.total_amount }}</span>
+                    <span class="status-badge
+                      {% if order.status == 'paid' %}status-paid
+                      {% elif order.status == 'pending' %}status-pending
+                      {% elif order.status == 'cancelled' %}status-cancelled
+                      {% elif order.status == 'completed' %}status-paid
+                      {% else %}status-default{% endif %}">{{ order.get_status_display }}</span>
+                  </div>
+                </div>
+                {% endfor %}
+
+                {% if total_orders > 5 %}
+                <div class="dash-card-footer-text">Showing 5 of {{ total_orders }} orders</div>
+                {% endif %}
+              </div>
+              {% else %}
+              <div class="dash-card-body">
+                <div class="dash-empty">
+                  <i data-lucide="shopping-bag"></i>
+                  <h5>No orders yet</h5>
+                  <p>Start shopping to see your orders here.</p>
+                  <a href="{% url 'products:product_list' %}" class="btn btn-primary">Browse Products
+                  </a>
+                </div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="dash-row-side">
+
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <div class="dash-card-icon" style="background:#d1fae5;color:#10b981;"><i data-lucide="user"></i></div>
+                <div class="dash-card-meta"><h5>Account Info</h5><p>Your details</p></div>
+              </div>
+              <div class="dash-card-body">
+                <div class="dash-kv"><span class="dash-kv-label">Username</span><span class="dash-kv-value">{{ user.username }}</span></div>
+                <div class="dash-kv"><span class="dash-kv-label">Email</span><span class="dash-kv-value">{{ user.email|truncatechars:22 }}</span></div>
+                <div class="dash-kv"><span class="dash-kv-label">Phone</span><span class="dash-kv-value">{{ user.phone|default:"Not set" }}</span></div>
+                <div class="dash-kv"><span class="dash-kv-label">Country</span><span class="dash-kv-value">{{ user.country|default:"Not set" }}</span></div>
+                <div class="dash-kv">
+                  <span class="dash-kv-label">Email Verified</span>
+                  {% if user.email_verified %}
+                    <span class="status-badge status-paid fs-65"><i data-lucide="check" class="ic-10"></i> Verified</span>
+                  {% else %}
+                    <span class="status-badge status-pending fs-65">Not Verified</span>
+                  {% endif %}
+                </div>
+                <div class="dash-kv">
+                  <span class="dash-kv-label">Social</span>
+                  <span class="dash-kv-value">
+                    {% if social_accounts %}
+                      {% for provider in social_accounts %}
+                        <span class="status-badge status-paid fs-6 ml-2">{{ provider|title }}</span>
+                      {% endfor %}
+                    {% else %}
+                      <span class="fs-78 text-muted">None linked</span>
+                    {% endif %}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <div class="dash-card-icon" style="background:#fef3c7;color:#d97706;"><i data-lucide="bar-chart-3"></i></div>
+                <div class="dash-card-meta"><h5>Spending Summary</h5><p>Your purchase history</p></div>
+              </div>
+              <div class="dash-card-body">
+                <div class="dash-kv"><span class="dash-kv-label">Total Spent</span><span class="dash-kv-value dash-kv-highlight">${{ total_spent }}</span></div>
+                <div class="dash-kv"><span class="dash-kv-label">This Month</span><span class="dash-kv-value">{{ recent_orders_count }} order{{ recent_orders_count|pluralize }}</span></div>
+                <div class="dash-kv"><span class="dash-kv-label">Pending</span>                <span class="dash-kv-value text-warning fw-7">{{ pending_orders }}</span></div>
+                <div class="dash-kv"><span class="dash-kv-label">Cancelled</span>                <span class="dash-kv-value text-error fw-7">{{ cancelled_orders }}</span></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {% if wishlist_items %}
+        <div data-aos="fade-up" data-aos-delay="250">
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <div class="dash-card-icon" style="background:#fce7f3;color:#d946ef;"><i data-lucide="heart"></i></div>
+              <div class="dash-card-meta"><h5>Wishlist Preview</h5><p>Products you've saved</p></div>
+              {% if wishlist_count > 4 %}
+              <a href="{% url 'products:wishlist' %}" class="btn btn-outline-primary btn-sm fw-bold ml-auto fs-78">
+                View All <i data-lucide="arrow-right" style="width:12px;height:12px;vertical-align:middle;margin-left:2px;"></i>
+              </a>
+              {% endif %}
+            </div>
+            <div class="dash-card-body">
+              <div class="dash-wishlist-grid">
+                {% for item in wishlist_items %}
+                <div class="dash-wish-card">
+                  <div class="dash-wish-img">
+                    {% if item.product.display_image %}
+                      <img src="{{ item.product.display_image }}" alt="{{ item.product.name }}">
+                    {% else %}
+                      <div class="dash-placeholder"><i data-lucide="package"></i></div>
+                    {% endif %}
+                  </div>
+                  <div class="dash-wish-info">
+                    <h6>{{ item.product.name|truncatechars:30 }}</h6>
+                    <span class="dash-wish-price">${{ item.product.price_usd }}</span>
+                  </div>
+                  <a href="{{ item.product.get_absolute_url }}" class="dash-wish-btn" title="View product">
+                    <i data-lucide="external-link"></i>
+                  </a>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+      </main>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

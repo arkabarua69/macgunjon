@@ -1,0 +1,85 @@
+{% load static %}
+<div class="product-card h-100">
+
+  {% if product.featured %}
+  <span class="product-badge">Featured</span>
+  {% elif product.created_at|timesince <= "30 days" %}
+  <span class="product-badge badge-new">New</span>
+  {% endif %}
+
+  {% if user.is_authenticated %}
+  {% if product.id in wishlist_ids %}
+  <a href="{% url 'products:remove_from_wishlist' product.id %}" class="wishlist-btn active" title="Remove from wishlist">
+    <i data-lucide="heart"></i>
+  </a>
+  {% else %}
+  <a href="{% url 'products:add_to_wishlist' product.id %}" class="wishlist-btn" title="Add to wishlist">
+    <i data-lucide="heart"></i>
+  </a>
+  {% endif %}
+  {% endif %}
+
+  <a href="{{ product.get_absolute_url }}" class="card-img-wrap text-deco-none">
+    {% if product.image %}
+    <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+    {% elif product.image_url %}
+    <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy">
+    {% else %}
+    <div class="img-placeholder">
+      <i data-lucide="package"></i>
+    </div>
+    {% endif %}
+    <div class="card-overlay">
+      <span class="card-overlay-btn" title="Quick view">
+        <i data-lucide="eye"></i>
+      </span>
+    </div>
+  </a>
+
+  <div class="card-body">
+    <div class="d-flex ai-center jc-between gap-2">
+      <span class="product-type-tag">{{ product.get_product_type_display }}</span>
+      <div class="product-rating m-0">
+        <span class="stars">
+          {% for i in "12345" %}
+            {% if forloop.counter <= product.get_average_rating %}
+            <i data-lucide="star"></i>
+            {% elif forloop.counter <= product.get_average_rating|add:"0.5" %}
+            <i data-lucide="star-half"></i>
+            {% else %}
+            <i data-lucide="star" class="opacity-20"></i>
+            {% endif %}
+          {% endfor %}
+        </span>
+        <span>({{ product.reviews.count }})</span>
+      </div>
+    </div>
+
+    <p class="product-name">
+      <a href="{{ product.get_absolute_url }}" class="text-deco-none" style="color:inherit;">
+        {{ product.name }}
+      </a>
+    </p>
+
+    <p class="text-muted fs-75 lh-14 m-0 text-clamp-2">
+      {{ product.description|truncatewords:15 }}
+    </p>
+
+    <div class="d-flex ai-center jc-between" style="margin-top:auto;padding-top:var(--space-3);">
+      <div class="product-price m-0">
+        {% if request.session.currency == 'GBP' %}&pound;{{ product.price_gbp }}{% else %}${{ product.price_usd }}{% endif %}
+      </div>
+      <div class="d-flex gap-2">
+        <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm fs-75" style="padding:5px 14px;">View</a>
+        <form action="{% url 'cart:cart_add' product.id %}" method="post" class="m-0">
+          {% csrf_token %}
+          <input type="hidden" name="quantity" value="1">
+          <button type="submit" class="btn btn-outline-primary btn-sm fs-75" title="Add to cart" style="padding:5px 10px;">
+            <i data-lucide="shopping-cart" class="ic-14"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>

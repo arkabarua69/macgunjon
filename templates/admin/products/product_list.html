@@ -1,0 +1,226 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static %}
+
+{% block title %}Products | Mac GunJon Admin{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-products model-product change-list{% endblock %}
+
+{% block content %}
+
+{% url cl.opts|admin_urlname:'add' as add_url %}
+{% url cl.opts|admin_urlname:'changelist' as list_url %}
+
+<!-- ========== HERO ========== -->
+<div class="admin-hero">
+  <div class="admin-hero-top">
+    <div class="admin-hero-left">
+      <div class="admin-hero-icon"><i class="fas fa-box"></i></div>
+      <div>
+        <h1>Products</h1>
+        <p>Manage all products in one place</p>
+      </div>
+    </div>
+    <div class="admin-hero-actions">
+      <a href="{{ add_url }}" class="admin-hero-btn admin-hero-btn-primary"><i class="fas fa-plus"></i> Add product</a>
+    </div>
+  </div>
+  <div class="admin-hero-meta">
+    <a href="{% url 'admin:products_product_changelist' %}" class="admin-hero-eco" style="background:rgba(255,255,255,0.25);border-color:rgba(255,255,255,0.4);"><i class="fas fa-box"></i> Products</a>
+    <a href="{% url 'admin:orders_order_changelist' %}" class="admin-hero-eco"><i class="fas fa-shopping-cart"></i> Orders</a>
+    <a href="{% url 'admin:users_user_changelist' %}" class="admin-hero-eco"><i class="fas fa-users"></i> Users</a>
+    <a href="{% url 'admin:blog_blogpost_changelist' %}" class="admin-hero-eco"><i class="fas fa-blog"></i> Blog</a>
+    <a href="{% url 'admin:products_category_changelist' %}" class="admin-hero-eco"><i class="fas fa-tags"></i> Categories</a>
+    <a href="{% url 'admin:pages_contactmessage_changelist' %}" class="admin-hero-eco"><i class="fas fa-envelope"></i> Contacts</a>
+  </div>
+</div>
+
+<!-- ========== TWO-COLUMN ========== -->
+<div class="pl-page">
+  <main class="pl-main">
+
+    <!-- Search + Date -->
+    <div class="pl-search-bar">
+      <form method="get" class="pl-search-form">
+        {% for key, val in cl.params.items %}
+          {% if key != 'q' %}<input type="hidden" name="{{ key }}" value="{{ val }}">{% endif %}
+        {% endfor %}
+        <div class="pl-search-input-wrap">
+          <i class="fas fa-search"></i>
+          <input type="text" name="q" value="{{ cl.query }}" placeholder="Search..." class="pl-search-input">
+        </div>
+        <button type="submit" class="pl-search-btn">Search</button>
+      </form>
+    </div>
+
+    {% if cl.date_hierarchy %}
+    <div class="pl-date-bar">
+      {{ cl.date_hierarchy }}
+    </div>
+    {% endif %}
+
+    <!-- Action Bar -->
+    {% if cl.formset %}
+    <div class="pl-action-bar">
+      <div class="pl-action-left">
+        {{ cl.action_form }}
+        <button type="submit" class="pl-action-go" name="index" value="0">Go</button>
+      </div>
+      <div class="pl-action-count"><span id="pl-selected-count">0</span> of {{ cl.result_count }} selected</div>
+    </div>
+    {% endif %}
+
+    <!-- Product Rows -->
+    <form id="changelist-form" method="post"{% if cl.formset and cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %} novalidate>
+      {% csrf_token %}
+      {% if cl.formset %}{{ cl.formset.management_form }}{% endif %}
+
+      <div class="pl-list">
+        {% for product in cl.result_list %}
+          {% with type=product.product_type %}
+            {% if type == 'bot' %}{% with avatar_bg='#E6F1FB' avatar_cl='#185FA5' %}{% include "admin/products/_product_card.html" %}{% endwith %}
+            {% elif type == 'website' %}{% with avatar_bg='#E1F5EE' avatar_cl='#0F6E56' %}{% include "admin/products/_product_card.html" %}{% endwith %}
+            {% elif type == 'digital' %}{% with avatar_bg='#EEEDFE' avatar_cl='#534AB7' %}{% include "admin/products/_product_card.html" %}{% endwith %}
+            {% elif type == 'course' %}{% with avatar_bg='#FAECE7' avatar_cl='#993C1D' %}{% include "admin/products/_product_card.html" %}{% endwith %}
+            {% else %}{% with avatar_bg='#E6F1FB' avatar_cl='#185FA5' %}{% include "admin/products/_product_card.html" %}{% endwith %}
+            {% endif %}
+          {% endwith %}
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      {% if cl.paginator.num_pages > 1 %}
+      <div class="pl-pagination">
+        {% if cl.page_num > 1 %}
+        <a href="?p={{ cl.page_num|add:'-1' }}{% for k,v in cl.params.items %}{% if k != 'p' %}&{{ k }}={{ v }}{% endif %}{% endfor %}" class="pl-page-btn"><i class="fas fa-chevron-left"></i></a>
+        {% endif %}
+        {% for p in cl.paginator.page_range %}
+          {% if p == cl.page_num %}
+          <span class="pl-page-btn active">{{ p }}</span>
+          {% elif p == 1 %}
+            {% if cl.page_num > 4 %}
+            <a href="?p={{ p }}{% for k,v in cl.params.items %}{% if k != 'p' %}&{{ k }}={{ v }}{% endif %}{% endfor %}" class="pl-page-btn">{{ p }}</a>
+            <span class="pl-page-ellipsis">...</span>
+            {% endif %}
+          {% elif p == cl.paginator.num_pages %}
+            {% if cl.page_num < cl.paginator.num_pages|add:'-3' %}
+            <span class="pl-page-ellipsis">...</span>
+            <a href="?p={{ p }}{% for k,v in cl.params.items %}{% if k != 'p' %}&{{ k }}={{ v }}{% endif %}{% endfor %}" class="pl-page-btn">{{ p }}</a>
+            {% endif %}
+          {% elif p >= cl.page_num|add:'-2' %}
+            {% if p <= cl.page_num|add:'2' %}
+            <a href="?p={{ p }}{% for k,v in cl.params.items %}{% if k != 'p' %}&{{ k }}={{ v }}{% endif %}{% endfor %}" class="pl-page-btn">{{ p }}</a>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+        {% if cl.page_num < cl.paginator.num_pages %}
+        <a href="?p={{ cl.page_num|add:'1' }}{% for k,v in cl.params.items %}{% if k != 'p' %}&{{ k }}={{ v }}{% endif %}{% endfor %}" class="pl-page-btn"><i class="fas fa-chevron-right"></i></a>
+        {% endif %}
+      </div>
+      {% endif %}
+
+    </form>
+
+    {% if not cl.result_list %}
+    <div class="pl-empty">
+      <i class="fas fa-box-open pl-empty-icon"></i>
+      <p class="pl-empty-title">No products found</p>
+      <p class="pl-empty-desc">Try adjusting your search or filters</p>
+    </div>
+    {% endif %}
+
+  </main>
+
+  <!-- ========== FILTER SIDEBAR (RIGHT) ========== -->
+  <aside class="pl-sidebar">
+    <div class="pl-filter-header">
+      <i class="fas fa-filter"></i> Filter
+    </div>
+
+    <!-- By Product Type -->
+    <div class="pl-filter-section">
+      <div class="pl-filter-title"><i class="fas fa-circle admin-fs-6"></i> BY PRODUCT TYPE</div>
+      <a href="." class="pl-filter-item {% if not cl.params.product_type %}active{% endif %}"><span class="pl-filter-dot"></span>All</a>
+      <a href="?product_type=digital" class="pl-filter-item {% if cl.params.product_type == 'digital' %}active{% endif %}"><span class="pl-filter-dot"></span>Digital Product</a>
+      <a href="?product_type=website" class="pl-filter-item {% if cl.params.product_type == 'website' %}active{% endif %}"><span class="pl-filter-dot"></span>Website Template</a>
+      <a href="?product_type=bot" class="pl-filter-item {% if cl.params.product_type == 'bot' %}active{% endif %}"><span class="pl-filter-dot"></span>Bot/Automation</a>
+      <a href="?product_type=course" class="pl-filter-item {% if cl.params.product_type == 'course' %}active{% endif %}"><span class="pl-filter-dot"></span>Course</a>
+    </div>
+
+    <!-- By Category -->
+    <div class="pl-filter-section">
+      <div class="pl-filter-title"><i class="fas fa-circle admin-fs-6"></i> BY CATEGORY</div>
+      <a href="." class="pl-filter-item {% if not cl.params.category__id__exact %}active{% endif %}"><span class="pl-filter-dot"></span>All</a>
+      {% for spec in cl.filter_specs %}
+        {% if spec.field_name == 'category' %}
+          {% for choice in spec.choices %}
+            {% if choice.display != 'All' %}
+            <a href="{{ choice.query_string|iriencode }}" class="pl-filter-item {% if choice.selected %}active{% endif %}"><span class="pl-filter-dot"></span>{{ choice.display }}</a>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <!-- By Available -->
+    <div class="pl-filter-section">
+      <div class="pl-filter-title"><i class="fas fa-circle admin-fs-6"></i> BY AVAILABLE</div>
+      <a href="." class="pl-filter-item {% if not cl.params.available__exact %}active{% endif %}"><span class="pl-filter-dot"></span>All</a>
+      <a href="?available__exact=1" class="pl-filter-item {% if cl.params.available__exact == '1' %}active{% endif %}"><span class="pl-filter-dot"></span>Yes</a>
+      <a href="?available__exact=0" class="pl-filter-item {% if cl.params.available__exact == '0' %}active{% endif %}"><span class="pl-filter-dot"></span>No</a>
+    </div>
+
+    <!-- By Featured -->
+    <div class="pl-filter-section">
+      <div class="pl-filter-title"><i class="fas fa-circle admin-fs-6"></i> BY FEATURED</div>
+      <a href="." class="pl-filter-item {% if not cl.params.featured__exact %}active{% endif %}"><span class="pl-filter-dot"></span>All</a>
+      <a href="?featured__exact=1" class="pl-filter-item {% if cl.params.featured__exact == '1' %}active{% endif %}"><span class="pl-filter-dot"></span>Yes</a>
+      <a href="?featured__exact=0" class="pl-filter-item {% if cl.params.featured__exact == '0' %}active{% endif %}"><span class="pl-filter-dot"></span>No</a>
+    </div>
+
+    <!-- By Created At -->
+    <div class="pl-filter-section">
+      <div class="pl-filter-title"><i class="fas fa-circle admin-fs-6"></i> BY CREATED AT</div>
+      <a href="." class="pl-filter-item active"><span class="pl-filter-dot"></span>Any date</a>
+      {% for spec in cl.filter_specs %}
+        {% if spec.field_name == 'created_at' or spec.title|lower == 'created at' %}
+          {% for choice in spec.choices %}
+            {% if choice.selected %}
+            <a href="{{ choice.query_string|iriencode }}" class="pl-filter-item active"><span class="pl-filter-dot"></span>{{ choice.display }}</a>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
+    </div>
+
+  </aside>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+(function() {
+  var checkboxes = document.querySelectorAll('.pl-list input[type="checkbox"]');
+  var counter = document.getElementById('pl-selected-count');
+  function updateCount() {
+    var c = 0;
+    checkboxes.forEach(function(cb) { if (cb.checked) c++; });
+    if (counter) counter.textContent = c;
+  }
+  checkboxes.forEach(function(cb) {
+    cb.addEventListener('change', updateCount);
+  });
+  var selectAll = document.getElementById('action-toggle');
+  if (selectAll) {
+    selectAll.addEventListener('change', function() {
+      checkboxes.forEach(function(cb) { cb.checked = selectAll.checked; });
+      updateCount();
+    });
+  }
+})();
+</script>
+{% endblock %}

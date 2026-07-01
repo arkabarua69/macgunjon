@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice #{{ order.id }}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 14px; color: #333; padding: 40px; }
+    .invoice-header { display: flex; justify-content: space-between; margin-bottom: 40px; border-bottom: 3px solid #dc3545; padding-bottom: 20px; }
+    .brand h1 { color: #dc3545; font-size: 24px; }
+    .brand p { color: #666; font-size: 12px; }
+    .invoice-meta { text-align: right; }
+    .invoice-meta h2 { color: #dc3545; font-size: 20px; margin-bottom: 5px; }
+    .invoice-meta p { font-size: 12px; color: #666; }
+    .customer-info { display: flex; justify-content: space-between; margin-bottom: 30px; }
+    .customer-info .box { width: 48%; }
+    .customer-info .box h4 { font-size: 12px; text-transform: uppercase; color: #999; margin-bottom: 8px; letter-spacing: 1px; }
+    .customer-info .box p { line-height: 1.6; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+    th { background: #dc3545; color: #fff; padding: 12px 15px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+    td { padding: 12px 15px; border-bottom: 1px solid #eee; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    .totals { display: flex; justify-content: flex-end; }
+    .totals table { width: 300px; }
+    .totals td { padding: 8px 15px; }
+    .totals .grand-total td { font-weight: bold; font-size: 16px; border-top: 2px solid #dc3545; color: #dc3545; }
+    .footer { margin-top: 40px; text-align: center; font-size: 11px; color: #999; border-top: 1px solid #eee; padding-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="invoice-header">
+    <div class="brand">
+      <h1>&#x1F916; Mac GunJon - Is Bot</h1>
+      <p>Premium Digital Products & Automation</p>
+      <p>support@macgunjon.com</p>
+    </div>
+    <div class="invoice-meta">
+      <h2>INVOICE</h2>
+      <p><strong>#{{ order.id }}</strong></p>
+      <p>Date: {{ order.created_at|date:"M d, Y" }}</p>
+      <p>Status: {{ order.get_status_display }}</p>
+    </div>
+  </div>
+
+  <div class="customer-info">
+    <div class="box">
+      <h4>Bill To</h4>
+      <p>
+        {{ order.first_name }} {{ order.last_name }}<br>
+        {{ order.email }}<br>
+        {{ order.address }}<br>
+        {{ order.city }}, {{ order.postal_code }}<br>
+        {{ order.country }}
+      </p>
+    </div>
+    <div class="box text-right">
+      <h4>Payment Info</h4>
+      <p>
+        Currency: {{ order.currency }}<br>
+        {% if order.stripe_payment_intent_id %}
+        Transaction ID: {{ order.stripe_payment_intent_id|truncatechars:20 }}<br>
+        {% endif %}
+        Payment Method: Stripe (Card)
+      </p>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Qty</th>
+        <th class="text-right">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td>{{ item.product.name }}</td>
+        <td>{{ order.currency }} {{ item.price }}</td>
+        <td>{{ item.quantity }}</td>
+        <td class="text-right">{{ order.currency }} {{ item.get_cost }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="totals">
+    <table>
+      <tr>
+        <td>Subtotal:</td>
+        <td class="text-right">{{ order.currency }} {{ order.total_amount }}</td>
+      </tr>
+      <tr class="grand-total">
+        <td>Total:</td>
+        <td class="text-right">{{ order.currency }} {{ order.total_amount }}</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="footer">
+    <p>Thank you for your purchase! For any questions, contact support@macgunjon.com</p>
+    <p>Mac GunJon - Is Bot &copy; {{ order.created_at|date:"Y" }}. All rights reserved.</p>
+  </div>
+</body>
+</html>

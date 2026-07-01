@@ -1,0 +1,24 @@
+{% load i18n static %}
+{% if cl.search_fields %}
+<div id="changelist-search">
+  <form method="get">
+    <div class="search-container">
+      <div class="search-input-group">
+        <label for="searchbar"><i class="fas fa-search search-icon"></i></label>
+        <input type="text" size="40" name="{{ search_var }}" value="{{ cl.query }}" id="searchbar" placeholder="{% translate 'Search…' %}" autofocus>
+        <input type="submit" value="{% translate 'Search' %}">
+      </div>
+      {% if show_result_count %}
+      <span class="help">{% blocktranslate count counter=cl.result_count %}{{ counter }} result{% plural %}{{ counter }} results{% endblocktranslate %}</span>
+      {% endif %}
+      {% if show_result_count and cl.result_count != cl.full_result_count %}
+      <span class="help">{% blocktranslate count full_result_count=cl.full_result_count %}{{ full_result_count }} total{% plural %}{{ full_result_count }} total{% endblocktranslate %}</span>
+      {% endif %}
+      {% if cl.query %}
+      <a href="{{ cl.get_query_string }}" class="search-clear-link"><i class="fas fa-times"></i> {% translate 'Clear' %}</a>
+      {% endif %}
+    </div>
+
+  </form>
+</div>
+{% endif %}

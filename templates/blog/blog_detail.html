@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ post.title }} — Mac GunJon Blog{% endblock %}
+
+{% block content %}
+
+<!-- ========== BLOG DETAIL ========== -->
+<section class="section" style="padding-top:clamp(4rem,4vw,5rem);padding-bottom:var(--space-12);">
+  <div class="container" style="max-width:800px;">
+
+    <!-- Breadcrumb -->
+    <div class="d-flex ai-center gap-8 fs-82 text-muted mb-24" data-aos="fade-up">
+      <a href="{% url 'products:home' %}" class="text-deco-none">Home</a>
+      <i data-lucide="chevron-right" class="ic-14"></i>
+      <a href="{% url 'blog:list' %}" class="text-deco-none">Blog</a>
+      <i data-lucide="chevron-right" class="ic-14"></i>
+      <span class="fw-5 text-body">{{ post.title }}</span>
+    </div>
+
+    <!-- Header -->
+    <div data-aos="fade-up">
+      <div class="d-flex ai-center gap-10 fw-wrap mb-16">
+        <span class="hero-chip d-inline-flex m-0">
+          <i data-lucide="calendar" class="ic-12"></i> {{ post.created_at|date:"F d, Y" }}
+        </span>
+        {% if post.author %}
+        <span class="fs-82 text-muted d-flex ai-center gap-4">
+          <i data-lucide="user" class="ic-14"></i> {{ post.author.username }}
+        </span>
+        {% endif %}
+      </div>
+
+      <h1 class="fw-8 mb-20" style="font-size:clamp(1.6rem,3vw,2.4rem);line-height:1.15;letter-spacing:-0.02em;">{{ post.title }}</h1>
+    </div>
+
+    <!-- Image -->
+    {% if post.display_image %}
+    <div class="radius-lg overflow-hidden mb-32" style="box-shadow:0 4px 20px rgba(0,0,0,0.06);" data-aos="fade-up" data-aos-delay="50">
+      <img src="{{ post.display_image }}" alt="{{ post.title }}" class="w-100 object-cover d-block" style="max-height:420px;">
+    </div>
+    {% endif %}
+
+    <!-- Content -->
+    <div class="blog-content fs-1 lh-18 text-body" data-aos="fade-up" data-aos-delay="100">
+      {{ post.content|linebreaks }}
+    </div>
+
+    <!-- Recent Posts -->
+    {% if recent %}
+    <hr class="my-48" style="border-color:var(--border);">
+
+    <h5 class="fw-7 d-flex ai-center gap-8 mb-20">
+      <i data-lucide="clock" class="ic-18 text-primary"></i> Recent Posts
+    </h5>
+
+    <div class="store-grid r-grid-3">
+      {% for r in recent %}
+      <article class="product-card cursor-pointer" onclick="window.location='{{ r.get_absolute_url }}'">
+        <a href="{{ r.get_absolute_url }}" class="card-img-wrap text-deco-none" style="height:140px;">
+          {% if r.display_image %}
+          <img src="{{ r.display_image }}" alt="{{ r.title }}" loading="lazy">
+          {% else %}
+          <div class="img-placeholder"><i data-lucide="file-text"></i></div>
+          {% endif %}
+        </a>
+        <div class="card-body px-14 py-12">
+          <span class="text-muted" style="font-size:.68rem;">{{ r.created_at|date:"M d, Y" }}</span>
+          <h6 class="fw-7 m-0" style="font-size:.82rem;line-height:1.3;">
+            <a href="{{ r.get_absolute_url }}" class="text-deco-none text-inherit">{{ r.title }}</a>
+          </h6>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Related Posts (by tag) -->
+    {% if related_by_tag %}
+    <hr class="my-48" style="border-color:var(--border);">
+
+    <h5 class="fw-7 d-flex ai-center gap-8 mb-20">
+      <i data-lucide="tag" class="ic-18 text-primary"></i> Related Posts
+    </h5>
+
+    <div class="store-grid r-grid-3">
+      {% for r in related_by_tag %}
+      <article class="product-card cursor-pointer" onclick="window.location='{{ r.get_absolute_url }}'">
+        <a href="{{ r.get_absolute_url }}" class="card-img-wrap text-deco-none" style="height:140px;">
+          {% if r.display_image %}
+          <img src="{{ r.display_image }}" alt="{{ r.title }}" loading="lazy">
+          {% else %}
+          <div class="img-placeholder"><i data-lucide="file-text"></i></div>
+          {% endif %}
+        </a>
+        <div class="card-body px-14 py-12">
+          <span class="text-muted" style="font-size:.68rem;">{{ r.created_at|date:"M d, Y" }}</span>
+          <h6 class="fw-7 m-0" style="font-size:.82rem;line-height:1.3;">
+            <a href="{{ r.get_absolute_url }}" class="text-deco-none text-inherit">{{ r.title }}</a>
+          </h6>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{% endblock %}

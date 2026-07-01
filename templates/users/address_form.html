@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ action }} Address — Mac GunJon{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="dash-hero">
+  <canvas id="canvas-particles"></canvas>
+  <div class="container">
+    <div class="dash-hero-inner">
+      <div>
+        <div class="dash-hero-badge" data-aos="fade-up">
+          <i data-lucide="map-pin"></i>
+          {{ action }} Address
+        </div>
+        <h1 class="dash-hero-title" data-aos="fade-up" data-aos-delay="100">
+          {{ action }} <span class="dash-grad">Address</span>
+        </h1>
+        <p class="dash-hero-desc" data-aos="fade-up" data-aos-delay="200">
+          Fill in the address details below.
+        </p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="150">
+        <div class="dash-hero-stats">
+          <div class="dash-hero-col">
+            <div class="dash-hero-stat">
+              <div class="dash-hero-stat-icon" style="background:#dbeafe;color:#3b82f6;">
+                <i data-lucide="map-pin"></i>
+              </div>
+              <div class="dash-hero-stat-text">
+                <h5>{{ action }} Address</h5>
+                <p>Shipping or billing</p>
+              </div>
+            </div>
+            <div class="dash-hero-stat">
+              <div class="dash-hero-stat-icon" style="background:#d1fae5;color:#10b981;">
+                <i data-lucide="check-circle"></i>
+              </div>
+              <div class="dash-hero-stat-text">
+                <h5>Save & Continue</h5>
+                <p>Faster checkout</p>
+              </div>
+            </div>
+          </div>
+          <div class="dash-hero-col dash-hero-col-r">
+            <div class="dash-hero-stat">
+              <div class="dash-hero-stat-icon" style="background:#fce7f3;color:#d946ef;">
+                <i data-lucide="truck"></i>
+              </div>
+              <div class="dash-hero-stat-text">
+                <h5>Delivery</h5>
+                <p>Accurate details</p>
+              </div>
+            </div>
+            <div class="dash-hero-stat">
+              <div class="dash-hero-stat-icon" style="background:#fff7ed;color:#f97316;">
+                <i data-lucide="globe"></i>
+              </div>
+              <div class="dash-hero-stat-text">
+                <h5>Worldwide</h5>
+                <p>International support</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="dash-section">
+  <div class="container max-w-720">
+    <div class="dash-card" data-aos="fade-up">
+      <div class="dash-card-header">
+        <div class="dash-card-icon" style="background:#dbeafe;color:#2563eb;"><i data-lucide="map-pin"></i></div>
+        <div class="dash-card-meta">
+          <h5>Address Details</h5>
+          <p>Fill in all required fields</p>
+        </div>
+      </div>
+      <div class="dash-card-body">
+        <form method="post" novalidate>
+          {% csrf_token %}
+          <div class="dash-form-grid">
+            {% for field in form %}
+            <div class="dash-field">
+              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+              {% if field.errors %}
+              <div class="dash-field-error">{{ field.errors }}</div>
+              {% endif %}
+              {% if field.help_text %}
+               <small class="fs-72 text-muted" style="margin-top:2px;display:block;">{{ field.help_text }}</small>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+          <div class="dash-form-actions border-none" style="padding-top:0.5rem;">
+            <button type="submit" class="btn btn-primary fw-bold">
+              <i data-lucide="save" class="ic-16 va-middle mr-2"></i>{{ action }} Address
+            </button>
+            <a href="{% url 'users:address_list' %}" class="btn btn-outline-secondary fw-bold">
+              <i data-lucide="arrow-left" class="ic-16 va-middle mr-2"></i>Back
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

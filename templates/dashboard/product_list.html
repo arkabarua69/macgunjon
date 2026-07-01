@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+{% block title %}Products - Dashboard{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="fw-bold"><i data-lucide="package" class="ic-28 va-middle mr-2 text-primary"></i>Products</h1>
+    <div class="d-flex gap-2">
+      <a href="{% url 'admin:products_product_add' %}" class="btn btn-primary"><i data-lucide="plus"></i> Add Product</a>
+      <a href="{% url 'dashboard:overview' %}" class="btn btn-outline-secondary"><i data-lucide="arrow-left"></i> Back</a>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Type</th>
+              <th>Price (USD)</th>
+              <th>Stock</th>
+              <th>Rating</th>
+              <th>Available</th>
+              <th>Featured</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for product in products %}
+            <tr>
+              <td>{{ product.id }}</td>
+              <td>
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="ic-40 object-cover radius">
+                {% elif product.image_url %}
+                <img src="{{ product.image_url }}" alt="{{ product.name }}" class="ic-40 object-cover radius">
+                {% else %}
+                <div class="ic-40 radius d-flex ai-center jc-center bg-alt"><i data-lucide="package" class="ic-16 text-muted"></i></div>
+                {% endif %}
+              </td>
+              <td><strong>{{ product.name }}</strong></td>
+              <td>{{ product.category }}</td>
+              <td><span class="badge bg-light text-dark">{{ product.get_product_type_display }}</span></td>
+              <td>${{ product.price_usd }}</td>
+              <td>{{ product.stock }}</td>
+              <td>{{ product.get_average_rating|floatformat:1 }}</td>
+              <td>{% if product.available %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-danger">No</span>{% endif %}</td>
+              <td>{% if product.featured %}<span class="badge bg-warning text-dark">Featured</span>{% else %}-{% endif %}</td>
+              <td>
+                <a href="{% url 'admin:products_product_change' product.id %}" class="btn btn-sm btn-outline-primary" title="Edit"><i data-lucide="edit"></i></a>
+                <a href="{{ product.get_absolute_url }}" class="btn btn-sm btn-outline-secondary" target="_blank" title="View"><i data-lucide="eye"></i></a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="11" class="text-center text-muted py-4">No products found</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

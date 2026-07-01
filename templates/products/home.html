@@ -1,0 +1,418 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mac GunJon — Premium Digital Products & Automation{% endblock %}
+
+{% block content %}
+
+<!-- ========== HERO ========== -->
+<section class="home-hero" style="
+    padding-top: 125px;">
+  <canvas id="canvas-particles"></canvas>
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-content">
+        {% with banner=hero_banners|first %}
+        <div class="hero-chip">
+          <i data-lucide="zap" class="ic-14"></i>
+          {{ banner.chip_text|default:'100% Instant Digital Delivery' }}
+        </div>
+        <h1 class="hero-title">
+          {% if banner.title %}{{ banner.title|safe }}{% else %}Grow Your <span class="hero-title-grad">Business With</span> <span id="typed-text" class="typed-word">Bots</span>{% endif %}
+        </h1>
+        <p class="hero-desc">
+          {{ banner.subtitle|default:'Premium websites, automation bots, and digital tools — built for entrepreneurs, agencies, and modern businesses.' }}
+        </p>
+        <div class="hero-actions">
+          <a href="{% if banner.cta_url %}{% url banner.cta_url %}{% else %}{% url 'products:product_list' %}{% endif %}" class="hero-btn-primary">
+            {{ banner.cta_text|default:'Browse Products' }} <i data-lucide="arrow-right"></i>
+          </a>
+          <a href="#how-it-works" class="hero-btn-ghost">
+            How It Works
+          </a>
+        </div>
+        {% endwith %}
+        <div class="hero-trust">
+          <div class="hero-trust-item">
+            <i data-lucide="shield-check" class="ic-16"></i>
+            <span>Secure Checkout</span>
+          </div>
+          <div class="hero-trust-divider"></div>
+          <div class="hero-trust-item">
+            <i data-lucide="credit-card" class="ic-16"></i>
+            <span>Stripe Powered</span>
+          </div>
+          <div class="hero-trust-divider"></div>
+          <div class="hero-trust-item">
+            <i data-lucide="download" class="ic-16"></i>
+            <span>Instant Access</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="mockup-glow"></div>
+        <div class="mockup-sparkle sparkle-1"></div>
+        <div class="mockup-sparkle sparkle-2"></div>
+        <div class="mockup-sparkle sparkle-3"></div>
+        <div class="hero-mockup">
+          <div class="mockup-window">
+            <div class="mockup-bar">
+              <span class="mockup-dot red"></span>
+              <span class="mockup-dot yellow"></span>
+              <span class="mockup-dot green"></span>
+              <span class="mockup-live"><span class="mockup-live-dot"></span> Live</span>
+              <div class="mockup-url">
+                <i data-lucide="lock" class="ic-10"></i>
+                macgunjon.com/store
+              </div>
+            </div>
+            <div class="mockup-content">
+              <div class="mockup-nav-row">
+                <div class="mockup-logo-sm">
+                  <i data-lucide="shopping-bag" class="ic-14"></i>
+                  Mac GunJon
+                </div>
+                <div class="mockup-nav-links">
+                  <span class="mockup-nav-active">Store</span>
+                  <span>About</span>
+                  <span>Contact</span>
+                </div>
+              </div>
+              <div class="mockup-hero-row">
+                <div class="mockup-hero-text">
+                  <div class="mockup-line-lg"></div>
+                  <div class="mockup-line-md"></div>
+                  <div class="mockup-line-sm"></div>
+                </div>
+                <div class="mockup-hero-btn"></div>
+              </div>
+              <div class="mockup-grid">
+                <div class="mockup-mini-product" style="animation-delay:0s;">
+                  <span class="mockup-sale">Sale</span>
+                  <div class="mockup-product-img mp-bg-blue"></div>
+                  <div class="mockup-product-info">
+                    <div class="mockup-line-xs"></div>
+                    <div class="mockup-line-price"></div>
+                  </div>
+                </div>
+                <div class="mockup-mini-product" style="animation-delay:0.1s;">
+                  <span class="mockup-sale mockup-sale-new">New</span>
+                  <div class="mockup-product-img mp-bg-pink"></div>
+                  <div class="mockup-product-info">
+                    <div class="mockup-line-xs"></div>
+                    <div class="mockup-line-price"></div>
+                  </div>
+                </div>
+                <div class="mockup-mini-product" style="animation-delay:0.2s;">
+                  <div class="mockup-product-img mp-bg-green"></div>
+                  <div class="mockup-product-info">
+                    <div class="mockup-line-xs"></div>
+                    <div class="mockup-line-price"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating Badges -->
+          <div class="mockup-float-badge badge-1">
+            <div class="mfb-icon eco-ic-blue"><i data-lucide="shopping-cart"></i></div>
+            <div>
+              <div class="mfb-value">+{{ total_orders }}</div>
+              <div class="mfb-label">Total Orders</div>
+            </div>
+          </div>
+          <div class="mockup-float-badge badge-2">
+            <div class="mfb-icon eco-ic-green"><i data-lucide="trending-up"></i></div>
+            <div>
+              <div class="mfb-value">{{ total_products }}+</div>
+              <div class="mfb-label">Products</div>
+            </div>
+          </div>
+          <div class="mockup-float-badge badge-3">
+            <div class="mfb-icon eco-ic-amber"><i data-lucide="star"></i></div>
+            <div>
+              <div class="mfb-value">{{ avg_rating }}</div>
+              <div class="mfb-label">Rating</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SOCIAL PROOF (merged into hero) ========== -->
+  <div class="proof-bar">
+    <div class="container">
+      <div class="proof-grid">
+        <div class="proof-item">
+          <div class="proof-icon"><i data-lucide="users"></i></div>
+          <h3>{{ total_users }}+</h3>
+          <p>Happy Customers</p>
+        </div>
+        <div class="proof-item">
+          <div class="proof-icon"><i data-lucide="package"></i></div>
+          <h3>{{ total_products }}+</h3>
+          <p>Digital Products</p>
+        </div>
+        <div class="proof-item">
+          <div class="proof-icon"><i data-lucide="clock"></i></div>
+          <h3>99%</h3>
+          <p>On-Time Delivery</p>
+        </div>
+        <div class="proof-item">
+          <div class="proof-icon"><i data-lucide="star"></i></div>
+          <h3>{{ avg_rating }}/5</h3>
+          <p>Average Rating</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CATEGORIES ========== -->
+{% if categories %}
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-chip">Browse by Type</div>
+      <h2 class="section-title">What Are You <strong>Looking For?</strong></h2>
+      <p class="section-desc">Find the perfect digital product for your business needs.</p>
+    </div>
+    <div class="home-categories-grid">
+      {% for cat in categories %}
+      <a href="{% url 'products:product_list_by_category' cat.slug %}" class="home-category-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}00">
+        <div class="home-cat-icon"><i data-lucide="{{ cat.icon|default:'folder' }}"></i></div>
+        <h5>{{ cat.name }}</h5>
+        <span class="home-cat-count">{{ cat.product_count }} products</span>
+        <i data-lucide="arrow-right" class="home-cat-arrow"></i>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ========== ECOSYSTEM ========== -->
+<section class="eco-section">
+  <div class="eco-pattern"></div>
+  <div class="eco-inner">
+    <div class="eco-chip">ALL-IN-ONE DIGITAL PLATFORM</div>
+    <h2 class="eco-heading">Grow Your Business With <strong>Premium Digital Products</strong></h2>
+    <p class="eco-sub">Website templates, automation bots, and digital tools — everything you need to build, launch, and scale your online business.</p>
+
+    <div class="eco-grid">
+      <svg class="eco-svg" id="ecoSvg"></svg>
+      <!-- Left Cards -->
+      <div class="eco-side eco-side-l">
+        {% for card in ecosystem_left %}
+        <div class="eco-card eco-card-{{ forloop.counter }}" data-color="{{ card.color|default:'#3b82f6' }}">
+          <div class="eco-card-ic" style="--ec-bg:{{ card.color|default:'#3b82f6' }}20;--ec-cl:{{ card.color|default:'#3b82f6' }};"><i data-lucide="{{ card.icon|default:'layout' }}"></i></div>
+          <div class="eco-card-tx"><h5>{{ card.title }}</h5><p>{{ card.description }}</p></div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Center Hub -->
+      <div class="eco-center">
+        <div class="eco-hub" id="ecoHub">
+          <div class="eco-hub-core"><i data-lucide="shopping-bag"></i></div>
+          <div class="eco-hub-glow"></div>
+          <div class="eco-hub-lbl"><strong>Mac GunJon</strong><span>Is Bot</span></div>
+        </div>
+      </div>
+
+      <!-- Right Cards -->
+      <div class="eco-side eco-side-r">
+        {% for card in ecosystem_right %}
+        <div class="eco-card eco-card-{{ forloop.counter|add:'4' }}" data-color="{{ card.color|default:'#3b82f6' }}">
+          <div class="eco-card-ic" style="--ec-bg:{{ card.color|default:'#3b82f6' }}20;--ec-cl:{{ card.color|default:'#3b82f6' }};"><i data-lucide="{{ card.icon|default:'layout' }}"></i></div>
+          <div class="eco-card-tx"><h5>{{ card.title }}</h5><p>{{ card.description }}</p></div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== POPULAR PRODUCTS ========== -->
+{% if popular_products %}
+<section class="section home-section-alt">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-chip">Best Sellers</div>
+      <h2 class="section-title">Most Popular <strong>Products</strong></h2>
+      <p class="section-desc">Trusted by over {{ total_users }} customers worldwide.</p>
+    </div>
+    <div class="home-products-grid">
+      {% with currency=request.session.currency %}
+      {% for product in popular_products %}
+      {% include 'products/_product_card.html' with product=product currency=currency %}
+      {% endfor %}
+      {% endwith %}
+    </div>
+    <div class="section-cta">
+      <a href="{% url 'products:product_list' %}" class="section-cta-btn">
+        View All Products <i data-lucide="arrow-right"></i>
+      </a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ========== HOW IT WORKS ========== -->
+<section class="section" id="how-it-works">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-chip">Simple Process</div>
+      <h2 class="section-title">How It <strong>Works</strong></h2>
+      <p class="section-desc">Get started in 3 easy steps — from browse to download in minutes.</p>
+    </div>
+    <div class="home-steps">
+      <div class="home-step" data-aos="fade-up" data-aos-delay="0">
+        <div class="home-step-num">1</div>
+        <div class="home-step-icon"><i data-lucide="search"></i></div>
+        <h4>Browse & Choose</h4>
+        <p>Explore our catalog of premium digital products. Filter by category, type, or price.</p>
+      </div>
+      <div class="home-step-line" data-aos="fade-up" data-aos-delay="100">
+        <div class="home-step-line-inner"></div>
+      </div>
+      <div class="home-step" data-aos="fade-up" data-aos-delay="200">
+        <div class="home-step-num">2</div>
+        <div class="home-step-icon"><i data-lucide="credit-card"></i></div>
+        <h4>Secure Checkout</h4>
+        <p>Pay securely with Stripe. We accept all major credit and debit cards.</p>
+      </div>
+      <div class="home-step-line" data-aos="fade-up" data-aos-delay="300">
+        <div class="home-step-line-inner"></div>
+      </div>
+      <div class="home-step" data-aos="fade-up" data-aos-delay="400">
+        <div class="home-step-num">3</div>
+        <div class="home-step-icon"><i data-lucide="download"></i></div>
+        <h4>Instant Download</h4>
+        <p>Get immediate access to your files. Download, deploy, and start using right away.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FEATURED PRODUCTS ========== -->
+{% if featured_products %}
+<section class="section home-section-alt">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-chip">Handpicked</div>
+      <h2 class="section-title">Featured <strong>Products</strong></h2>
+      <p class="section-desc">Curated selections handpicked by our team for quality and value.</p>
+    </div>
+    <div class="home-products-grid">
+      {% with currency=request.session.currency %}
+      {% for product in featured_products %}
+      {% include 'products/_product_card.html' with product=product currency=currency %}
+      {% endfor %}
+      {% endwith %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ========== NEW ARRIVALS ========== -->
+{% if new_arrivals %}
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-chip">Just Dropped</div>
+      <h2 class="section-title">New <strong>Arrivals</strong></h2>
+      <p class="section-desc">Fresh digital products added this week.</p>
+    </div>
+    <div class="home-products-grid">
+      {% with currency=request.session.currency %}
+      {% for product in new_arrivals %}
+      {% include 'products/_product_card.html' with product=product currency=currency %}
+      {% endfor %}
+      {% endwith %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ========== TESTIMONIALS ========== -->
+{% if testimonials %}
+<section class="section home-section-alt" id="testimonials">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-chip">What Customers Say</div>
+      <h2 class="section-title">Trusted by <strong>Businesses Worldwide</strong></h2>
+      <p class="section-desc">Real feedback from real customers who transformed their business.</p>
+    </div>
+    <div class="testimonial-slider-wrap">
+      <button class="ts-arrow ts-arrow-prev" type="button" aria-label="Previous">
+        <i data-lucide="chevron-left"></i>
+      </button>
+      <div class="testimonial-slider-viewport">
+        <div class="testimonial-slider-track">
+          {% for testimonial in testimonials %}
+          <div class="testimonial-slide">
+            <div class="home-testimonial">
+              <div class="home-testimonial-quote"><i data-lucide="quote"></i></div>
+              <div class="home-testimonial-stars">
+                {% for i in "12345" %}
+                  {% if forloop.counter <= testimonial.rating %}
+                  <i data-lucide="star" class="ic-16" style="fill:#fbbf24;color:#fbbf24;"></i>
+                  {% else %}
+                  <i data-lucide="star" class="ic-16" style="color:#d1d5db;"></i>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <p>"{{ testimonial.quote }}"</p>
+              <div class="home-testimonial-author">
+                {% if testimonial.avatar_image %}
+                <img src="{{ testimonial.avatar_image.url }}" alt="{{ testimonial.name }}" class="home-author-avatar object-cover">
+                {% else %}
+                <div class="home-author-avatar" style="--ha-bg:{{ testimonial.avatar_color|default:'#3b82f6' }};">{{ testimonial.name|first }}</div>
+                {% endif %}
+                <div>
+                  <h5>{{ testimonial.name }}</h5>
+                  <span>{{ testimonial.role }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <button class="ts-arrow ts-arrow-next" type="button" aria-label="Next">
+        <i data-lucide="chevron-right"></i>
+      </button>
+      <div class="ts-controls">
+        <div class="ts-dots"></div>
+        <div class="ts-counter" aria-live="polite">1 / <span id="tsTotal">{{ testimonials|length }}</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ========== CTA ========== -->
+<section class="home-cta">
+  <div class="container">
+    <div class="home-cta-inner" data-aos="fade-up">
+      <h2>Ready to Level Up Your Business?</h2>
+      <p>Join {{ total_users }}+ businesses already using our digital products to grow faster.</p>
+      <div class="home-cta-actions">
+        <a href="{% url 'products:product_list' %}" class="hero-btn-primary">
+          Browse Products <i data-lucide="arrow-right"></i>
+        </a>
+        <a href="{% url 'pages:contact' %}" class="hero-btn-ghost">
+          Contact Us
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+{% endblock %}

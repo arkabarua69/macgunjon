@@ -1,0 +1,38 @@
+{% load i18n admin_urls humanize %}
+{% if result_hidden_fields %}
+<div class="hiddenfields">{% for item in result_hidden_fields %}{{ item }}{% endfor %}</div>
+{% endif %}
+{% if results %}
+<div class="results">
+  {# ── Hidden table for Django form submission ── #}
+  <table id="result_list"
+         data-app-label="{{ cl.opts.app_label }}"
+         data-model-name="{{ cl.opts.model_name }}"
+         data-verbose="{{ cl.opts.verbose_name_plural|capfirst }}"
+         data-admin-urlname="{{ cl.opts|admin_urlname:'changelist' }}">
+  <thead><tr>
+  {% for header in result_headers %}
+   <th scope="col"{{ header.class_attrib }}><div class="text">{% if header.sortable %}<a href="{{ header.url_primary }}">{{ header.text|capfirst }}</a>{% else %}<span>{{ header.text|capfirst }}</span>{% endif %}</div></th>
+  {% endfor %}
+  <th scope="col" class="action-header"><div class="text"><span>Action</span></div></th>
+  </tr></thead>
+  <tbody>
+  {% for result in results %}
+  {% if result.form and result.form.non_field_errors %}
+    <tr><td colspan="{{ result|length|add:'1' }}">{{ result.form.non_field_errors }}</td></tr>
+  {% endif %}
+  {% with obj=cl.result_list|slice:forloop.counter|last %}
+  <tr data-object-pk="{{ obj.pk }}"{% if obj.get_absolute_url %} data-view-url="{{ obj.get_absolute_url }}"{% endif %}{% if obj.image %} data-thumb-url="{{ obj.image.url }}"{% elif obj.avatar %} data-thumb-url="{{ obj.avatar.url }}"{% elif obj.logo %} data-thumb-url="{{ obj.logo.url }}"{% endif %}>{% for item in result %}{{ item }}{% endfor %}<td class="action-cell"></td></tr>
+  {% endwith %}
+  {% endfor %}
+  </tbody>
+  </table>
+
+  {# ── List header row ── #}
+  <div class="card-list-header" id="card-list-header"></div>
+
+  {# ── Visible product/model cards ── #}
+  <ul class="product-card-list" id="product-cards"></ul>
+
+</div>
+{% endif %}

@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+{% block title %}Order #{{ order.id }} - Dashboard{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="fw-bold"><i data-lucide="shopping-bag" class="ic-28 va-middle mr-2 text-primary"></i>Order #{{ order.id }}</h1>
+    <div class="d-flex gap-2">
+      <a href="{% url 'dashboard:orders' %}" class="btn btn-outline-secondary"><i data-lucide="arrow-left"></i> Back to Orders</a>
+      <a href="{% url 'admin:orders_order_change' order.id %}" class="btn btn-outline-primary"><i data-lucide="edit"></i> Edit in Admin</a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-8">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white"><h5 class="mb-0 fw-bold">Order Details</h5></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <p class="text-muted mb-1 small">Customer</p>
+              <p class="fw-bold mb-0">{{ order.first_name }} {{ order.last_name }}</p>
+              <p class="text-muted small mb-0">{{ order.email }}</p>
+            </div>
+            <div class="col-md-6">
+              <p class="text-muted mb-1 small">Status</p>
+              <span class="badge bg-{% if order.status == 'completed' %}primary{% elif order.status == 'paid' %}success{% elif order.status == 'pending' %}warning{% elif order.status == 'processing' %}info{% elif order.status == 'cancelled' %}danger{% elif order.status == 'refunded' %}secondary{% else %}secondary{% endif %} fs-6">
+                {{ order.get_status_display }}
+              </span>
+            </div>
+            <div class="col-md-6">
+              <p class="text-muted mb-1 small">Shipping Address</p>
+              <p class="mb-0">{{ order.address }}</p>
+              <p class="text-muted small mb-0">{{ order.city }}, {{ order.postal_code }}</p>
+              <p class="text-muted small mb-0">{{ order.country }}</p>
+            </div>
+            <div class="col-md-6">
+              <p class="text-muted mb-1 small">Dates</p>
+              <p class="mb-0">Created: {{ order.created_at|date:"M d, Y H:i" }}</p>
+              <p class="text-muted small mb-0">Updated: {{ order.updated_at|date:"M d, Y H:i" }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white"><h5 class="mb-0 fw-bold">Order Items</h5></div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr><th>Product</th><th>Price</th><th>Qty</th><th>Subtotal</th></tr>
+            </thead>
+            <tbody>
+              {% for item in order.items.all %}
+              <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ order.currency }} {{ item.price|floatformat:2 }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ order.currency }} {{ item.get_cost|floatformat:2 }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {% if order.status_history.all %}
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white"><h5 class="mb-0 fw-bold">Status History</h5></div>
+        <div class="card-body">
+          {% for history in order.status_history.all %}
+          <div class="d-flex align-items-start gap-3 mb-3">
+            <div class="rounded-circle bg-primary text-white d-flex ai-center jc-center ic-32 flex-shrink-0 fs-75">{{ forloop.counter }}</div>
+            <div>
+              <p class="mb-0 fw-bold">{{ history.old_status|default:"N/A" }} &rarr; {{ history.new_status }}</p>
+              <p class="text-muted small mb-0">{% if history.changed_by %}by {{ history.changed_by }}{% endif %} &mdash; {{ history.created_at|date:"M d, Y H:i" }}</p>
+              {% if history.note %}<p class="small mb-0">{{ history.note }}</p>{% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white"><h5 class="mb-0 fw-bold">Payment Summary</h5></div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-2"><span class="text-muted">Subtotal</span><span>{{ order.currency }} {{ order.subtotal|floatformat:2 }}</span></div>
+          <div class="d-flex justify-content-between mb-2"><span class="text-muted">Discount</span><span>-{{ order.currency }} {{ order.discount_amount|floatformat:2 }}</span></div>
+          <div class="d-flex justify-content-between mb-2"><span class="text-muted">Tax</span><span>{{ order.currency }} {{ order.tax_amount|floatformat:2 }}</span></div>
+          <hr>
+          <div class="d-flex justify-content-between fw-bold fs-5"><span>Total</span><span>{{ order.currency }} {{ order.total_amount|floatformat:2 }}</span></div>
+        </div>
+      </div>
+
+      {% if order.customer_notes %}
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white"><h5 class="mb-0 fw-bold">Customer Notes</h5></div>
+        <div class="card-body"><p class="mb-0">{{ order.customer_notes }}</p></div>
+      </div>
+      {% endif %}
+
+      {% if order.stripe_payment_intent_id %}
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white"><h5 class="mb-0 fw-bold">Payment Info</h5></div>
+        <div class="card-body">
+          <p class="text-muted small mb-1">Stripe Payment Intent</p>
+          <p class="mb-0 fs-8" style="word-break:break-all;">{{ order.stripe_payment_intent_id }}</p>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

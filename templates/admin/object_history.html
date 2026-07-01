@@ -1,0 +1,94 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static %}
+
+{% block title %}{% trans 'History' %} | {{ object|truncatewords:"18" }} | Mac GunJon Admin{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-form history-page{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}"><i class="fas fa-home breadcrumb-home-icon"></i> Home</a>
+  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+  &rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+  &rsaquo; <a href="{% url opts|admin_urlname:'change' object.pk|admin_urlquote %}">{{ object|truncatewords:"18" }}</a>
+  &rsaquo; {% trans 'History' %}
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-hero">
+  <div class="admin-hero-top">
+    <div class="admin-hero-left">
+      <div class="admin-hero-icon"><i class="fas fa-clock-rotate-left"></i></div>
+      <div>
+        <h1>{% trans 'History' %}: {{ object|truncatewords:"18" }}</h1>
+        <p>{% trans 'View all changes made to this object' %}</p>
+      </div>
+    </div>
+    <div class="admin-hero-actions">
+      <a href="{% url opts|admin_urlname:'change' object.pk|admin_urlquote %}" class="admin-hero-btn admin-hero-btn-ghost"><i class="fas fa-arrow-left"></i> {% trans 'Back' %}</a>
+    </div>
+  </div>
+  <div class="admin-hero-meta">
+    <a href="{% url 'admin:products_product_changelist' %}" class="admin-hero-eco"><i class="fas fa-box"></i> Products</a>
+    <a href="{% url 'admin:orders_order_changelist' %}" class="admin-hero-eco"><i class="fas fa-shopping-cart"></i> Orders</a>
+    <a href="{% url 'admin:users_user_changelist' %}" class="admin-hero-eco"><i class="fas fa-users"></i> Users</a>
+    <a href="{% url 'admin:blog_blogpost_changelist' %}" class="admin-hero-eco"><i class="fas fa-blog"></i> Blog</a>
+  </div>
+</div>
+
+{% if action_list %}
+<div class="history-table-wrap">
+<table class="history-table">
+  <thead>
+    <tr>
+      <th scope="col">{% trans 'Date / Time' %}</th>
+      <th scope="col">{% trans 'User' %}</th>
+      <th scope="col">{% trans 'Action' %}</th>
+      <th scope="col">{% trans 'Changes' %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for action in action_list %}
+    <tr>
+      <td class="history-date">{{ action.action_time|date:"M d, Y H:i" }}</td>
+      <td>
+        <div class="history-user">
+          <i class="fas fa-user-circle history-user-icon"></i>
+          {% if action.user.get_short_name %}{{ action.user.get_short_name }}{% else %}{{ action.user }}{% endif %}
+        </div>
+      </td>
+      <td>
+        {% if action.action_flag == 1 %}
+        <span class="history-action history-action-add"><i class="fas fa-plus"></i> {% trans 'Added' %}</span>
+        {% elif action.action_flag == 2 %}
+        <span class="history-action history-action-change"><i class="fas fa-pen"></i> {% trans 'Changed' %}</span>
+        {% elif action.action_flag == 3 %}
+        <span class="history-action history-action-delete"><i class="fas fa-trash"></i> {% trans 'Deleted' %}</span>
+        {% endif %}
+      </td>
+      <td class="history-changes-text">
+        {% if action.action_flag == 2 and action.change_message %}
+          {{ action.change_message|truncatechars:120 }}
+        {% elif action.action_flag == 1 %}
+          <span class="history-created-text">{% trans 'Created' %}</span>
+        {% else %}
+          <span class="admin-color-muted" style="font-style:italic;">—</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<div class="dash-section" style="margin-top:0;">
+  <div class="dash-empty" style="padding:48px 20px;">
+    <i class="fas fa-clock" style="font-size:32px;"></i>
+    <p class="admin-fw-5" style="font-size:0.9rem;">{% trans 'No changes have been recorded for this object yet.' %}</p>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

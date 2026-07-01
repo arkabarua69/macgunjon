@@ -1,0 +1,95 @@
+{% extends "admin/base_site.html" %}
+{% load i18n l10n admin_urls static %}
+
+{% block title %}{% trans 'Delete multiple objects' %} | Mac GunJon Admin{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} delete-confirmation delete-selected-confirmation{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}"><i class="fas fa-home breadcrumb-home-icon"></i> Home</a>
+  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+  &rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+  &rsaquo; {% trans 'Delete multiple objects' %}
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-hero delete-hero">
+  <div class="admin-hero-top">
+    <div class="admin-hero-left">
+      <div class="admin-hero-icon" style="background:rgba(255,255,255,0.15);">
+        <i class="fas fa-trash"></i>
+      </div>
+      <div>
+        <h1>Delete {{ opts.verbose_name_plural|capfirst }}</h1>
+        <p>{% trans 'This action cannot be undone' %}</p>
+      </div>
+    </div>
+  </div>
+  <div class="admin-hero-meta">
+    <span class="admin-hero-time"><i class="fas fa-exclamation-triangle"></i> {% trans 'You are about to permanently remove multiple items' %}</span>
+  </div>
+</div>
+
+<div class="delete-page-wrap">
+
+  {% if perms_lacking %}
+    <div class="delete-card">
+      <div class="delete-card-icon delete-card-icon-warning">
+        <i class="fas fa-ban"></i>
+      </div>
+      <h2 class="delete-card-title">{% trans 'Permission Denied' %}</h2>
+      <p class="delete-card-desc">{% blocktranslate %}Deleting the selected {{ objects_name }} would result in deleting related objects, but your account doesn't have permission to delete the following types of objects:{% endblocktranslate %}</p>
+      <ul class="delete-related-list" id="deleted-objects">{{ perms_lacking|unordered_list }}</ul>
+    </div>
+  {% elif protected %}
+    <div class="delete-card">
+      <div class="delete-card-icon delete-card-icon-warning">
+        <i class="fas fa-shield-halved"></i>
+      </div>
+      <h2 class="delete-card-title">{% trans 'Protected Objects' %}</h2>
+      <p class="delete-card-desc">{% blocktranslate %}Deleting the selected {{ objects_name }} would require deleting the following protected related objects:{% endblocktranslate %}</p>
+      <ul class="delete-related-list" id="deleted-objects">{{ protected|unordered_list }}</ul>
+    </div>
+  {% else %}
+    <div class="delete-card">
+      <div class="delete-card-icon delete-card-icon-danger">
+        <i class="fas fa-trash"></i>
+      </div>
+      <h2 class="delete-card-title">{% trans 'Are you sure?' %}</h2>
+      <p class="delete-card-desc">{% blocktranslate %}Are you sure you want to delete the selected {{ objects_name }}? All of the following objects and their related items will be deleted:{% endblocktranslate %}</p>
+
+      <div class="delete-related-section">
+        <div class="delete-related-header">
+          <i class="fas fa-link"></i>
+          <span>{% trans 'Items to be deleted' %}</span>
+        </div>
+        <div class="delete-related-body">
+          {% for deletable_object in deletable_objects %}
+          <ul class="delete-related-list">{{ deletable_object|unordered_list }}</ul>
+          {% endfor %}
+        </div>
+      </div>
+
+      <form method="post" class="delete-form">{% csrf_token %}
+        {% for obj in queryset %}
+        <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk|unlocalize }}">
+        {% endfor %}
+        <input type="hidden" name="action" value="delete_selected">
+        <input type="hidden" name="post" value="yes">
+        <div class="delete-actions">
+          <a href="{% url opts|admin_urlname:'changelist' %}" class="delete-btn delete-btn-cancel">
+            <i class="fas fa-arrow-left"></i> {% trans 'No, take me back' %}
+          </a>
+          <button type="submit" class="delete-btn delete-btn-danger">
+            <i class="fas fa-trash"></i> {% trans "Yes, I'm sure — Delete" %}
+          </button>
+        </div>
+      </form>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

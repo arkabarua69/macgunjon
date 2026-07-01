@@ -1,0 +1,15 @@
+{% if show %}
+<nav class="date-nav-bar">
+  {% block date-hierarchy-toplinks %}
+  {% block date-hierarchy-back %}
+  {% if back %}<a href="{{ back.link }}" class="date-back"><i class="fas fa-chevron-left admin-fs-10"></i> {{ back.title }}</a>{% endif %}
+  {% endblock %}
+  <div class="date-nav-sep"></div>
+  {% block date-hierarchy-choices %}
+  {% for choice in choices %}
+    {% if choice.link %}<a href="{{ choice.link }}" class="date-nav-pill">{{ choice.title }}</a>{% else %}<span class="date-nav-pill active">{{ choice.title }}</span>{% endif %}
+  {% endfor %}
+  {% endblock %}
+  {% endblock %}
+</nav>
+{% endif %}

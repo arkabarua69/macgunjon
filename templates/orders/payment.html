@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Secure Payment — Mac GunJon - Is Bot{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+
+  <div class="progress-steps mb-5">
+    <div class="progress-step completed">
+      <div class="step-circle"><i data-lucide="check" class="ic-16"></i></div>
+      <span class="step-label">Checkout</span>
+    </div>
+    <div class="progress-line completed"></div>
+    <div class="progress-step active">
+      <div class="step-circle">2</div>
+      <span class="step-label">Payment</span>
+    </div>
+    <div class="progress-line"></div>
+    <div class="progress-step">
+      <div class="step-circle">3</div>
+      <span class="step-label">Confirmed</span>
+    </div>
+  </div>
+
+  <div class="row g-4 justify-content-center">
+    <div class="col-lg-7">
+      <div class="payment-card">
+        <div class="payment-header d-flex align-items-center gap-3">
+          <div style="width:44px;height:44px;border-radius:var(--radius-full);background:rgba(255,255,255,.15);
+                      display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,.2);">
+            <i data-lucide="lock" class="ic-20 text-white"></i>
+          </div>
+          <div>
+            <h5 class="mb-0 fw-bold">Secure Payment</h5>
+            <p class="mb-0 opacity-75 fs-8">Powered by Stripe - 256-bit SSL encryption</p>
+          </div>
+        </div>
+
+        <div class="payment-body">
+          <div class="alert alert-info mb-4">
+            <div class="d-flex align-items-center gap-2">
+              <i data-lucide="info" class="ic-18"></i>
+              <div>
+                <strong>Order Total: </strong>
+                {% if order.currency == 'GBP' %}£{{ order.total_amount }}{% else %}${{ order.total_amount }}{% endif %}
+                <span class="ms-2 text-muted fs-8">(Order #{{ order.id }})</span>
+              </div>
+            </div>
+          </div>
+
+          <form id="paymentForm">
+            <div class="floating-group mb-4">
+              <label>Card Details</label>
+              <div id="card-element"></div>
+            </div>
+
+            <button id="payBtn" type="submit" class="btn btn-danger btn-lg w-100 fw-bold py-3">
+<i data-lucide="lock" class="ic-18 d-inline va-middle mr-2"></i>
+              Pay {% if order.currency == 'GBP' %}£{{ order.total_amount }}{% else %}${{ order.total_amount }}{% endif %} Now
+            </button>
+          </form>
+
+          <div id="paymentError" class="alert alert-danger mt-3 d-none"></div>
+
+          <div class="d-flex justify-content-center gap-4 mt-4 text-muted fs-75">
+            <span><i data-lucide="shield-check" class="ic-14 d-inline va-middle mr-2 text-success"></i>SSL Secured</span>
+            <span><i data-lucide="credit-card" class="ic-14 d-inline va-middle mr-2"></i>Stripe Verified</span>
+            <span><i data-lucide="shield" class="ic-14 d-inline va-middle mr-2 text-success"></i>PCI Compliant</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="summary-card">
+        <div class="summary-header"><i data-lucide="receipt" class="ic-18"></i>Order Summary</div>
+        <div class="summary-body">
+          <div class="summary-row"><span>Order ID</span><span class="fw-bold">#{{ order.id }}</span></div>
+          <div class="summary-row">
+            <span>Customer</span>
+            <span>{{ order.first_name }} {{ order.last_name }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Email</span>
+            <span class="fs-8">{{ order.email }}</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span>{% if order.currency == 'GBP' %}£{{ order.total_amount }}{% else %}${{ order.total_amount }}{% endif %}</span>
+          </div>
+
+          <div class="mt-3 p-3 rounded bg-alt fs-8 text-muted">
+            <i data-lucide="info" class="ic-14 d-inline va-middle mr-2"></i>
+            After payment, your digital products will be available for download instantly.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  var stripe = Stripe('{{ stripe_public_key }}');
+  var elements = stripe.elements({
+    appearance: {
+      theme: 'stripe',
+      variables: {
+        colorPrimary: '#e02d3c',
+        borderRadius: '6px',
+        fontFamily: '"Inter", sans-serif',
+      }
+    }
+  });
+  var card = elements.create('card', {
+    style: {
+      base: { fontSize: '16px', color: '#0f172a', '::placeholder': { color: '#94a3b8' } }
+    }
+  });
+  card.mount('#card-element');
+
+  card.on('focus', function() { document.getElementById('card-element').style.borderColor = 'var(--primary)'; });
+  card.on('blur', function() { document.getElementById('card-element').style.borderColor = 'var(--border)'; });
+
+  var form = document.getElementById('paymentForm');
+  var payBtn = document.getElementById('payBtn');
+  var errDiv = document.getElementById('paymentError');
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    payBtn.disabled = true;
+    payBtn.innerHTML = '<i data-lucide="loader" style="width:18px;height:18px;display:inline;vertical-align:middle;margin-right:8px;"></i>Processing...';
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+    errDiv.style.display = 'none';
+
+    var result = await stripe.confirmCardPayment('{{ client_secret }}', {
+      payment_method: { card: card }
+    });
+
+    if (result.error) {
+      errDiv.textContent = result.error.message;
+      errDiv.style.display = 'block';
+      payBtn.disabled = false;
+      payBtn.innerHTML = '<i data-lucide="lock" style="width:18px;height:18px;display:inline;vertical-align:middle;margin-right:8px;"></i>Pay {% if order.currency == "GBP" %}£{{ order.total_amount }}{% else %}${{ order.total_amount }}{% endif %} Now';
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    } else {
+      payBtn.innerHTML = '<i data-lucide="check-circle" style="width:18px;height:18px;display:inline;vertical-align:middle;margin-right:8px;"></i>Payment Successful! Redirecting...';
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+      window.location.href = "{% url 'orders:success' %}";
+    }
+  });
+})();
+</script>
+{% endblock %}

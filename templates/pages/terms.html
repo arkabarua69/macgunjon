@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Terms & Conditions — Mac GunJon{% endblock %}
+
+{% block content %}
+
+<!-- ========== TERMS HERO ========== -->
+<section class="home-hero">
+  <canvas id="canvas-particles"></canvas>
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-content">
+        <div class="hero-chip">
+          <i data-lucide="file-check" class="ic-14"></i>
+          Legal
+        </div>
+        <h1 class="hero-title">
+          Terms & <strong>Conditions</strong>
+        </h1>
+        <p class="hero-desc">
+          Last updated: March 2026. Please read these terms carefully before using our services.
+        </p>
+        <div class="hero-actions">
+          <a href="{% url 'pages:privacy' %}" class="hero-btn-primary">
+            Privacy Policy <i data-lucide="lock"></i>
+          </a>
+          <a href="{% url 'pages:contact' %}" class="hero-btn-ghost">
+            Contact Us <i data-lucide="message-circle"></i>
+          </a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="faq-hero-eco">
+          <div class="faq-eco-hub">
+            <i data-lucide="file-check"></i>
+          </div>
+          <div class="faq-eco-ring ring-1"></div>
+          <div class="faq-eco-ring ring-2"></div>
+          <div class="faq-eco-card fc-1">
+            <div class="fc-icon" style="background:#dbeafe;color:#3b82f6;"><i data-lucide="package"></i></div>
+            <div class="fc-text"><strong>Digital Products</strong><span>License & delivery</span></div>
+          </div>
+          <div class="faq-eco-card fc-2">
+            <div class="fc-icon" style="background:#fce7f3;color:#d946ef;"><i data-lucide="credit-card"></i></div>
+            <div class="fc-text"><strong>Payments</strong><span>Stripe processed</span></div>
+          </div>
+          <div class="faq-eco-card fc-3">
+            <div class="fc-icon" style="background:#d1fae5;color:#10b981;"><i data-lucide="shield"></i></div>
+            <div class="fc-text"><strong>Your Rights</strong><span>License & usage</span></div>
+          </div>
+          <div class="faq-eco-card fc-4">
+            <div class="fc-icon" style="background:#fef3c7;color:#f59e0b;"><i data-lucide="headphones"></i></div>
+            <div class="fc-text"><strong>Support</strong><span>We're here to help</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== TERMS CONTENT ========== -->
+<section class="section" id="terms">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-chip">Terms & Conditions</div>
+      <h2 class="section-title">Our Agreement With <strong>You</strong></h2>
+      <p class="section-desc">By using Mac GunJon, you agree to the following terms.</p>
+    </div>
+
+    <div class="section-container-narrow">
+      <div class="accordion" id="termsAccordion">
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="50">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold" data-bs-toggle="collapse" data-bs-target="#term1">
+              <i data-lucide="file-check" class="ic-16 accordion-icon""></i>
+              1. Acceptance of Terms
+            </button>
+          </h2>
+          <div id="term1" class="accordion-collapse collapse show" data-bs-parent="#termsAccordion">
+            <div class="accordion-body">
+              By accessing and using Mac GunJon - Is Bot, you agree to be bound by these terms and conditions. If you do not agree, please do not use our services.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="100">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold collapsed" data-bs-toggle="collapse" data-bs-target="#term2">
+              <i data-lucide="package" class="ic-16 accordion-icon""></i>
+              2. Digital Products
+            </button>
+          </h2>
+          <div id="term2" class="accordion-collapse collapse" data-bs-parent="#termsAccordion">
+            <div class="accordion-body">
+              All products sold on this website are digital goods. Due to their nature, all sales are final. Refunds are issued only in cases of technical defects with the product itself.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="150">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold collapsed" data-bs-toggle="collapse" data-bs-target="#term3">
+              <i data-lucide="key" class="ic-16 accordion-icon""></i>
+              3. License
+            </button>
+          </h2>
+          <div id="term3" class="accordion-collapse collapse" data-bs-parent="#termsAccordion">
+            <div class="accordion-body">
+              When you purchase a product, you receive a non-exclusive, non-transferable license to use the product for personal or commercial projects. Reselling or redistributing our products as-is is prohibited.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="200">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold collapsed" data-bs-toggle="collapse" data-bs-target="#term4">
+              <i data-lucide="shield" class="ic-16 accordion-icon""></i>
+              4. Account Responsibilities
+            </button>
+          </h2>
+          <div id="term4" class="accordion-collapse collapse" data-bs-parent="#termsAccordion">
+            <div class="accordion-body">
+              You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="250">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold collapsed" data-bs-toggle="collapse" data-bs-target="#term5">
+              <i data-lucide="credit-card" class="ic-16 accordion-icon""></i>
+              5. Payment Terms
+            </button>
+          </h2>
+          <div id="term5" class="accordion-collapse collapse" data-bs-parent="#termsAccordion">
+            <div class="accordion-body">
+              All payments are processed securely through Stripe. Prices are displayed in your selected currency (GBP or USD). You are responsible for any currency conversion fees charged by your bank.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="300">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold collapsed" data-bs-toggle="collapse" data-bs-target="#term6">
+              <i data-lucide="alert-triangle" class="ic-16 accordion-icon""></i>
+              6. Limitation of Liability
+            </button>
+          </h2>
+          <div id="term6" class="accordion-collapse collapse" data-bs-parent="#termsAccordion">
+            <div class="accordion-body">
+              Mac GunJon - Is Bot shall not be liable for any indirect, incidental, or consequential damages arising from the use of our products or services.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="350">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold collapsed" data-bs-toggle="collapse" data-bs-target="#term7">
+              <i data-lucide="copyright" class="ic-16 accordion-icon""></i>
+              7. Intellectual Property
+            </button>
+          </h2>
+          <div id="term7" class="accordion-collapse collapse" data-bs-parent="#termsAccordion">
+            <div class="accordion-body">
+              All content, design, graphics, and code on this website are the intellectual property of Mac GunJon. Unauthorized reproduction or distribution is strictly prohibited.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="400">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold collapsed" data-bs-toggle="collapse" data-bs-target="#term8">
+              <i data-lucide="edit" class="ic-16 accordion-icon""></i>
+              8. Changes to Terms
+            </button>
+          </h2>
+          <div id="term8" class="accordion-collapse collapse" data-bs-parent="#termsAccordion">
+            <div class="accordion-body">
+              We reserve the right to modify these terms at any time. Changes will be effective immediately upon posting to this page.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="450">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold collapsed" data-bs-toggle="collapse" data-bs-target="#term9">
+              <i data-lucide="phone" class="ic-16 accordion-icon""></i>
+              9. Contact
+            </button>
+          </h2>
+          <div id="term9" class="accordion-collapse collapse" data-bs-parent="#termsAccordion">
+            <div class="accordion-body">
+              For any questions regarding these terms, please <a href="{% url 'pages:contact' %}">contact us</a>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== TRUST ========== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-chip">Why Choose Us</div>
+      <h2 class="section-title">Built on Trust & <strong>Transparency</strong></h2>
+      <p class="section-desc">We believe in fair terms and clear communication.</p>
+    </div>
+    <div class="home-trust section-container-wide"">
+      <div class="home-trust-card text-center" data-aos="fade-up" data-aos-delay="50">
+        <div class="home-trust-icon" style="background:#dbeafe;color:#3b82f6;margin:0 auto 16px;">
+          <i data-lucide="shield" class="ic-24"></i>
+        </div>
+        <h4>Secure Platform</h4>
+        <p>Your data and transactions are protected at all times.</p>
+      </div>
+      <div class="home-trust-card text-center" data-aos="fade-up" data-aos-delay="100">
+        <div class="home-trust-icon" style="background:#d1fae5;color:#059669;margin:0 auto 16px;">
+          <i data-lucide="check-circle" class="ic-24"></i>
+        </div>
+        <h4>Instant Delivery</h4>
+        <p>All products are delivered digitally with instant access.</p>
+      </div>
+      <div class="home-trust-card text-center" data-aos="fade-up" data-aos-delay="150">
+        <div class="home-trust-icon" style="background:#fef3c7;color:#d97706;margin:0 auto 16px;">
+          <i data-lucide="headphones" class="ic-24"></i>
+        </div>
+        <h4>Support</h4>
+        <p>Our team is here to help with any questions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CTA ========== -->
+<section class="home-cta">
+  <div class="container">
+    <div class="home-cta-inner" data-aos="fade-up">
+      <h2>Ready to Get Started?</h2>
+      <p>Browse our store and discover premium digital products.</p>
+      <div class="home-cta-actions">
+        <a href="{% url 'products:product_list' %}" class="hero-btn-primary">
+          Visit Store <i data-lucide="shopping-bag"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

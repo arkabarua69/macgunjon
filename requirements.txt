@@ -1,0 +1,60 @@
+# Core
+Django==5.2.15
+python-dotenv==1.2.2
+gunicorn==23.0.0
+
+# Database
+psycopg2-binary>=2.9.9,<3
+
+# Static & Media
+whitenoise==6.9.0
+
+# Forms
+django-crispy-forms==2.6
+crispy-bootstrap5==2026.3
+
+# Payments
+stripe==15.2.1
+
+# Cache & Session
+django-redis==7.0.0
+
+# Security
+django-cors-headers==4.9.0
+django-axes==8.3.1
+
+# Monitoring
+django-health-check==4.0.1
+
+# Email
+django-ses==4.1.0
+
+# Rate Limiting
+django-ratelimit==4.1.0
+
+# Async Tasks
+celery==5.5.2
+django-celery-beat==2.9.0
+
+# API
+djangorestframework==3.16.0
+djangorestframework-simplejwt==5.5.1
+django-filter==25.2
+
+# PDF
+weasyprint==65.1
+
+# Social Auth
+django-allauth==65.8.0
+
+# 2FA
+django-otp==1.7.0
+
+# Tags
+django-taggit==6.1.0
+
+# Error Tracking
+sentry-sdk==2.28.0
+
+# Image Processing
+Pillow>=10.4.0,<13

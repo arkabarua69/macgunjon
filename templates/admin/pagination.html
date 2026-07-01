@@ -1,0 +1,15 @@
+{% load admin_list %}
+{% load i18n %}
+{% if cl.paginator.num_pages > 1 %}
+<div class="paginator">
+  {% if cl.show_all_url %}<a href="{{ cl.show_all_url }}" class="showall">{% translate 'Show all' %}</a>{% endif %}
+  {% if pagination_required %}
+  {% for i in page_range %}
+    {% paginator_number cl i %}
+  {% endfor %}
+  {% endif %}
+  <span class="paginator-count">
+    {{ cl.result_count }} {% if cl.result_count == 1 %}{{ cl.opts.verbose_name }}{% else %}{{ cl.opts.verbose_name_plural }}{% endif %}
+  </span>
+</div>
+{% endif %}

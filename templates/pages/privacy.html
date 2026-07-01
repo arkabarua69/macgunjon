@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Privacy Policy — Mac GunJon{% endblock %}
+
+{% block content %}
+
+<!-- ========== PRIVACY HERO ========== -->
+<section class="home-hero">
+  <canvas id="canvas-particles"></canvas>
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-content">
+        <div class="hero-chip">
+          <i data-lucide="shield" class="ic-14"></i>
+          Your Privacy Matters
+        </div>
+        <h1 class="hero-title">
+          Privacy <strong>Policy</strong>
+        </h1>
+        <p class="hero-desc">
+          Last updated: March 2026. We take your privacy seriously. Learn how we collect, use, and protect your data.
+        </p>
+        <div class="hero-actions">
+          <a href="{% url 'pages:terms' %}" class="hero-btn-primary">
+            Terms & Conditions <i data-lucide="file-check"></i>
+          </a>
+          <a href="{% url 'pages:contact' %}" class="hero-btn-ghost">
+            Contact Us <i data-lucide="message-circle"></i>
+          </a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="faq-hero-eco">
+          <div class="faq-eco-hub">
+            <i data-lucide="shield"></i>
+          </div>
+          <div class="faq-eco-ring ring-1"></div>
+          <div class="faq-eco-ring ring-2"></div>
+          <div class="faq-eco-card fc-1">
+            <div class="fc-icon" style="background:#dbeafe;color:#3b82f6;"><i data-lucide="lock"></i></div>
+            <div class="fc-text"><strong>Data Protection</strong><span>Encrypted storage</span></div>
+          </div>
+          <div class="faq-eco-card fc-2">
+            <div class="fc-icon" style="background:#fce7f3;color:#d946ef;"><i data-lucide="user-check"></i></div>
+            <div class="fc-text"><strong>Your Rights</strong><span>Access & control</span></div>
+          </div>
+          <div class="faq-eco-card fc-3">
+            <div class="fc-icon" style="background:#d1fae5;color:#10b981;"><i data-lucide="cookie"></i></div>
+            <div class="fc-text"><strong>Cookies</strong><span>Browser controls</span></div>
+          </div>
+          <div class="faq-eco-card fc-4">
+            <div class="fc-icon" style="background:#fef3c7;color:#f59e0b;"><i data-lucide="mail"></i></div>
+            <div class="fc-text"><strong>Contact</strong><span>Ask us anything</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PRIVACY CONTENT ========== -->
+<section class="section" id="privacy">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-chip">Privacy Policy</div>
+      <h2 class="section-title">How We Handle Your <strong>Data</strong></h2>
+      <p class="section-desc">We believe in transparency. Here's a complete overview of our privacy practices.</p>
+    </div>
+
+    <div class="section-container-narrow">
+      <div class="accordion" id="privacyAccordion">
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="50">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold" data-bs-toggle="collapse" data-bs-target="#priv1">
+              <i data-lucide="file-text" class="ic-16 accordion-icon""></i>
+              1. Information We Collect
+            </button>
+          </h2>
+          <div id="priv1" class="accordion-collapse collapse show" data-bs-parent="#privacyAccordion">
+            <div class="accordion-body">
+              We collect information you provide directly to us, including your name, email address, and payment information when you create an account, make a purchase, or contact us.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="100">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold collapsed" data-bs-toggle="collapse" data-bs-target="#priv2">
+              <i data-lucide="database" class="ic-16 accordion-icon""></i>
+              2. How We Use Your Information
+            </button>
+          </h2>
+          <div id="priv2" class="accordion-collapse collapse" data-bs-parent="#privacyAccordion">
+            <div class="accordion-body">
+              We use the information we collect to process your orders, communicate with you about your purchases, send you product updates (with your consent), and improve our services.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="150">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold collapsed" data-bs-toggle="collapse" data-bs-target="#priv3">
+              <i data-lucide="credit-card" class="ic-16 accordion-icon""></i>
+              3. Payment Information
+            </button>
+          </h2>
+          <div id="priv3" class="accordion-collapse collapse" data-bs-parent="#privacyAccordion">
+            <div class="accordion-body">
+              All payment processing is handled securely by Stripe. We do not store your full credit card details on our servers.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="200">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold collapsed" data-bs-toggle="collapse" data-bs-target="#priv4">
+              <i data-lucide="lock" class="ic-16 accordion-icon""></i>
+              4. Data Protection
+            </button>
+          </h2>
+          <div id="priv4" class="accordion-collapse collapse" data-bs-parent="#privacyAccordion">
+            <div class="accordion-body">
+              We implement industry-standard security measures to protect your personal information. Your data is encrypted in transit and at rest.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="250">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold collapsed" data-bs-toggle="collapse" data-bs-target="#priv5">
+              <i data-lucide="user-check" class="ic-16 accordion-icon""></i>
+              5. Your Rights
+            </button>
+          </h2>
+          <div id="priv5" class="accordion-collapse collapse" data-bs-parent="#privacyAccordion">
+            <div class="accordion-body">
+              You have the right to access, correct, or delete your personal data at any time. You can do this through your account dashboard or by contacting us.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="300">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold collapsed" data-bs-toggle="collapse" data-bs-target="#priv6">
+              <i data-lucide="cookie" class="ic-16 accordion-icon""></i>
+              6. Cookies & Tracking
+            </button>
+          </h2>
+          <div id="priv6" class="accordion-collapse collapse" data-bs-parent="#privacyAccordion">
+            <div class="accordion-body">
+              We use cookies and similar technologies to enhance your browsing experience, analyze site traffic, and understand where our visitors come from. You can control cookies through your browser settings.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="350">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold collapsed" data-bs-toggle="collapse" data-bs-target="#priv7">
+              <i data-lucide="share-2" class="ic-16 accordion-icon""></i>
+              7. Data Sharing
+            </button>
+          </h2>
+          <div id="priv7" class="accordion-collapse collapse" data-bs-parent="#privacyAccordion">
+            <div class="accordion-body">
+              We do not sell or rent your personal information to third parties. We may share data with trusted service providers who assist us in operating our website and conducting our business.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="400">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold collapsed" data-bs-toggle="collapse" data-bs-target="#priv8">
+              <i data-lucide="globe" class="ic-16 accordion-icon""></i>
+              8. International Transfers
+            </button>
+          </h2>
+          <div id="priv8" class="accordion-collapse collapse" data-bs-parent="#privacyAccordion">
+            <div class="accordion-body">
+              Your information may be transferred to and processed in countries other than your own. We ensure appropriate safeguards are in place for such transfers.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="450">
+          <h2 class="accordion-header">
+            <button class="accordion-button fw-bold collapsed" data-bs-toggle="collapse" data-bs-target="#priv9">
+              <i data-lucide="phone" class="ic-16 accordion-icon""></i>
+              9. Contact Us
+            </button>
+          </h2>
+          <div id="priv9" class="accordion-collapse collapse" data-bs-parent="#privacyAccordion">
+            <div class="accordion-body">
+              If you have any questions about this privacy policy, please <a href="{% url 'pages:contact' %}">contact us</a>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== TRUST BADGES ========== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-chip">Your Safety</div>
+      <h2 class="section-title">We Protect Your <strong>Privacy</strong></h2>
+      <p class="section-desc">Your data is safe with us. Here's how we keep it secure.</p>
+    </div>
+    <div class="home-trust section-container-wide"">
+      <div class="home-trust-card text-center" data-aos="fade-up" data-aos-delay="50">
+        <div class="home-trust-icon" style="background:#dbeafe;color:#3b82f6;margin:0 auto 16px;">
+          <i data-lucide="shield" class="ic-24"></i>
+        </div>
+        <h4>Secure Payments</h4>
+        <p>All transactions are encrypted and processed securely via Stripe.</p>
+      </div>
+      <div class="home-trust-card text-center" data-aos="fade-up" data-aos-delay="100">
+        <div class="home-trust-icon" style="background:#d1fae5;color:#059669;margin:0 auto 16px;">
+          <i data-lucide="lock" class="ic-24"></i>
+        </div>
+        <h4>Data Encrypted</h4>
+        <p>Your data is protected with industry-standard encryption at all times.</p>
+      </div>
+      <div class="home-trust-card text-center" data-aos="fade-up" data-aos-delay="150">
+        <div class="home-trust-icon" style="background:#fef3c7;color:#d97706;margin:0 auto 16px;">
+          <i data-lucide="user-check" class="ic-24"></i>
+        </div>
+        <h4>Your Control</h4>
+        <p>Access, update, or delete your data anytime from your dashboard.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CTA ========== -->
+<section class="home-cta">
+  <div class="container">
+    <div class="home-cta-inner" data-aos="fade-up">
+      <h2>Have Questions?</h2>
+      <p>We're here to help. Reach out to us anytime.</p>
+      <div class="home-cta-actions">
+        <a href="{% url 'pages:contact' %}" class="hero-btn-primary">
+          Contact Us <i data-lucide="mail"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}{% trans 'Add user' %} | Mac GunJon Admin{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-auth model-user change-form user-add-page{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}"><i class="fas fa-home breadcrumb-home-icon"></i> Home</a>
+  &rsaquo; <a href="{% url 'admin:app_list' app_label='auth' %}">{% trans 'Accounts' %}</a>
+  &rsaquo; <a href="{% url 'admin:users_user_changelist' %}">{% trans 'Users' %}</a>
+  &rsaquo; {% trans 'Add user' %}
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-hero">
+  <div class="admin-hero-top">
+    <div class="admin-hero-left">
+      <div class="admin-hero-icon"><i class="fas fa-user-plus"></i></div>
+      <div>
+        <h1>{% trans 'Add User' %}</h1>
+        <p>{% trans 'Create a new user account' %}</p>
+      </div>
+    </div>
+    <div class="admin-hero-actions">
+      <a href="{% url 'admin:users_user_changelist' %}" class="admin-hero-btn admin-hero-btn-ghost"><i class="fas fa-arrow-left"></i> {% trans 'Back to List' %}</a>
+    </div>
+  </div>
+  <div class="admin-hero-meta">
+    <a href="{% url 'admin:products_product_changelist' %}" class="admin-hero-eco"><i class="fas fa-box"></i> Products</a>
+    <a href="{% url 'admin:orders_order_changelist' %}" class="admin-hero-eco"><i class="fas fa-shopping-cart"></i> Orders</a>
+    <a href="{% url 'admin:users_user_changelist' %}" class="admin-hero-eco"><i class="fas fa-users"></i> Users</a>
+    <span class="admin-hero-time"><i class="fas fa-user-plus"></i> {% trans 'Creating new user' %}</span>
+  </div>
+</div>
+
+<div id="content-main">
+  <form method="post" id="user_form" novalidate>{% csrf_token %}
+    {% if errors %}
+    <div class="errornote">
+      <i class="fas fa-exclamation-circle admin-fs-16 admin-flex-shrink-0"></i>
+      <div>{% blocktranslate count counter=errors|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}</div>
+    </div>
+    {{ adminform.form.non_field_errors }}
+    {% endif %}
+
+    <fieldset class="module aligned">
+      <h2><span class="fieldset-heading-accent"></span> {% trans 'Account Details' %}</h2>
+      <div class="form-row field-email">
+        <div>
+          <label for="id_email" class="required">{% trans 'Email' %}:</label>
+          {{ form.email }}
+          {% if form.email.errors %}<ul class="errorlist">{% for e in form.email.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+      </div>
+      <div class="form-row field-password1">
+        <div>
+          <label for="id_password1" class="required">{% trans 'Password' %}:</label>
+          {{ form.password1 }}
+          {% if form.password1.errors %}<ul class="errorlist">{% for e in form.password1.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+          <div class="help">{% trans 'Your password must contain at least 8 characters.' %}</div>
+        </div>
+      </div>
+      <div class="form-row field-password2">
+        <div>
+          <label for="id_password2" class="required">{% trans 'Password confirmation' %}:</label>
+          {{ form.password2 }}
+          {% if form.password2.errors %}<ul class="errorlist">{% for e in form.password2.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+          <div class="help">{% trans 'Enter the same password as before, for verification.' %}</div>
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="submit-row">
+      <input type="submit" name="_save" value="{% trans 'Save' %}" class="default">
+      <input type="submit" name="_addanother" value="{% trans 'Save and add another' %}">
+      <input type="submit" name="_continue" value="{% trans 'Save and continue editing' %}">
+    </div>
+  </form>
+</div>
+
+{% endblock %}

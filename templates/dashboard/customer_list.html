@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+{% block title %}Customers - Dashboard{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="fw-bold"><i data-lucide="users" class="ic-28 va-middle mr-2 text-primary"></i>Customers</h1>
+    <a href="{% url 'dashboard:overview' %}" class="btn btn-outline-secondary"><i data-lucide="arrow-left"></i> Back</a>
+  </div>
+
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <form method="get" class="row g-3 align-items-end">
+        <div class="col-md-3">
+          <label class="form-label small fw-bold">Search</label>
+          <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Email, username, name...">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label small fw-bold">Role</label>
+          <select name="role" class="form-select">
+            <option value="">All Roles</option>
+            <option value="regular" {% if filter_role == 'regular' %}selected{% endif %}>Regular</option>
+            <option value="staff" {% if filter_role == 'staff' %}selected{% endif %}>Staff</option>
+            <option value="superuser" {% if filter_role == 'superuser' %}selected{% endif %}>Superuser</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label small fw-bold">Status</label>
+          <select name="status" class="form-select">
+            <option value="">All Status</option>
+            <option value="active" {% if filter_status == 'active' %}selected{% endif %}>Active</option>
+            <option value="inactive" {% if filter_status == 'inactive' %}selected{% endif %}>Inactive</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label small fw-bold">Joined From</label>
+          <input type="date" name="date_from" value="{{ filter_date_from }}" class="form-control">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label small fw-bold">Joined To</label>
+          <input type="date" name="date_to" value="{{ filter_date_to }}" class="form-control">
+        </div>
+        <div class="col-md-1 d-flex gap-1">
+          <button type="submit" class="btn btn-primary btn-sm" title="Filter"><i data-lucide="filter" class="ic-16"></i></button>
+          <a href="{% url 'dashboard:customers' %}" class="btn btn-outline-secondary btn-sm" title="Clear"><i data-lucide="x" class="ic-16"></i></a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Avatar</th>
+              <th>Email</th>
+              <th>Username</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Phone</th>
+              <th>Country</th>
+              <th>Orders</th>
+              <th>Joined</th>
+              <th>Last Login</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for customer in customers %}
+            <tr>
+              <td>
+                {% if customer.avatar %}
+                <img src="{{ customer.avatar.url }}" alt="{{ customer.username }}" class="ic-36 radius-full object-cover">
+                {% else %}
+                <div class="ic-36 radius-full d-flex ai-center jc-center fw-7 fs-8 text-primary" style="background:linear-gradient(135deg,#dbeafe,#eff6ff);">{{ customer.username|truncatechars:1|upper }}</div>
+                {% endif %}
+              </td>
+              <td>{{ customer.email }}</td>
+              <td>{{ customer.username }}</td>
+              <td>
+                {% if customer.is_superuser %}
+                <span class="badge bg-danger">Superuser</span>
+                {% elif customer.is_staff %}
+                <span class="badge bg-info">Staff</span>
+                {% else %}
+                <span class="badge bg-light text-dark">Regular</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if customer.is_active %}
+                <span class="badge bg-success">Active</span>
+                {% else %}
+                <span class="badge bg-secondary">Inactive</span>
+                {% endif %}
+              </td>
+              <td>{{ customer.phone|default:"-" }}</td>
+              <td>{{ customer.country|default:"-" }}</td>
+              <td>{{ customer.order_count }}</td>
+              <td>{{ customer.date_joined|date:"M d, Y" }}</td>
+              <td>{{ customer.last_login|date:"M d, Y H:i"|default:"Never" }}</td>
+              <td>
+                <a href="{% url 'admin:users_user_change' customer.pk %}" class="btn btn-sm btn-outline-primary" title="Edit"><i data-lucide="edit"></i></a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="11" class="text-center text-muted py-4">No customers found</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

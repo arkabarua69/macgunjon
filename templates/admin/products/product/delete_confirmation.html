@@ -1,0 +1,98 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static %}
+
+{% block extrahead %}
+  {{ block.super }}
+  {{ media }}
+  <script src="{% static 'admin/js/cancel.js' %}" async></script>
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} delete-confirmation{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}"><i class="fas fa-home breadcrumb-home-icon"></i> Home</a>
+  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+  &rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+  &rsaquo; <a href="{% url opts|admin_urlname:'change' object.pk|admin_urlquote %}">{{ object|truncatewords:"18" }}</a>
+  &rsaquo; Delete
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-hero delete-hero">
+  <div class="admin-hero-top">
+    <div class="admin-hero-left">
+      <div class="admin-hero-icon" style="background:rgba(255,255,255,0.15);">
+        <i class="fas fa-trash"></i>
+      </div>
+      <div>
+        <h1>Delete {{ opts.verbose_name|capfirst }}</h1>
+        <p>This action cannot be undone</p>
+      </div>
+    </div>
+  </div>
+  <div class="admin-hero-meta">
+    <span class="admin-hero-time"><i class="fas fa-exclamation-triangle"></i> You are about to permanently remove this {{ opts.verbose_name }}</span>
+  </div>
+</div>
+
+<div class="delete-page-wrap">
+
+  {% if perms_lacking %}
+    <div class="delete-card">
+      <div class="delete-card-icon delete-card-icon-warning">
+        <i class="fas fa-ban"></i>
+      </div>
+      <h2 class="delete-card-title">Permission Denied</h2>
+      <p class="delete-card-desc">Deleting the {{ object_name }} &ldquo;{{ object }}&rdquo; would result in deleting related objects, but your account doesn't have permission to delete the following types of objects:</p>
+      <ul class="delete-related-list" id="deleted-objects">{{ perms_lacking|unordered_list }}</ul>
+    </div>
+  {% elif protected %}
+    <div class="delete-card">
+      <div class="delete-card-icon delete-card-icon-warning">
+        <i class="fas fa-shield-halved"></i>
+      </div>
+      <h2 class="delete-card-title">Protected Objects</h2>
+      <p class="delete-card-desc">Deleting the {{ object_name }} &ldquo;{{ object }}&rdquo; would require deleting the following protected related objects:</p>
+      <ul class="delete-related-list" id="deleted-objects">{{ protected|unordered_list }}</ul>
+    </div>
+  {% else %}
+    <div class="delete-card">
+      <div class="delete-card-icon delete-card-icon-danger">
+        <i class="fas fa-trash"></i>
+      </div>
+      <h2 class="delete-card-title">Are you sure?</h2>
+      <p class="delete-card-desc">Are you sure you want to delete the {{ object_name }} <strong>&ldquo;{{ object }}&rdquo;</strong>?</p>
+
+      {% if deleted_objects %}
+      <div class="delete-related-section">
+        <div class="delete-related-header">
+          <i class="fas fa-link"></i>
+          <span>Related items that will also be deleted</span>
+        </div>
+        <div class="delete-related-body">
+          <ul class="delete-related-list" id="deleted-objects">{{ deleted_objects|unordered_list }}</ul>
+        </div>
+      </div>
+      {% endif %}
+
+      <form method="post" class="delete-form">{% csrf_token %}
+        <input type="hidden" name="post" value="yes">
+        {% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1">{% endif %}
+        {% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}">{% endif %}
+        <div class="delete-actions">
+          <a href="{% url opts|admin_urlname:'change' object.pk|admin_urlquote %}" class="delete-btn delete-btn-cancel">
+            <i class="fas fa-arrow-left"></i> No, take me back
+          </a>
+          <button type="submit" class="delete-btn delete-btn-danger">
+            <i class="fas fa-trash"></i> Yes, I'm sure — Delete
+          </button>
+        </div>
+      </form>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

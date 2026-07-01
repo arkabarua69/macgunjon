@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sign In — Mac GunJon{% endblock %}
+
+{% block content %}
+<style>
+.login-grid { display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center; }
+@media (max-width:768px) {
+  .login-grid { grid-template-columns:1fr !important; }
+  .login-eco { display:none !important; }
+}
+</style>
+
+<section class="home-hero" style="padding:clamp(4rem,4vw,5rem) 0;">
+  <canvas id="canvas-particles"></canvas>
+  <div class="container">
+    <div class="login-grid" style="position:relative;z-index:1;">
+
+      <div class="login-eco" data-aos="fade-up">
+        <div class="hero-chip d-inline-flex mb-5">
+          <i data-lucide="log-in" class="ic-14"></i>
+          Welcome Back
+        </div>
+        <h2 style="font-size:clamp(1.4rem,2.5vw,1.8rem);font-weight:800;line-height:1.2;margin-bottom:8px;">
+          Sign in to <span style="background:linear-gradient(135deg,#2563eb,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Mac GunJon</span>
+        </h2>
+        <p class="fs-9 text-secondary mb-6" style="max-width:380px;">
+          Access your account, orders, wishlist, and more.
+        </p>
+        <div class="store-eco-grid m-0">
+          <div class="store-eco-col">
+            <div class="store-eco-card" data-color="#3b82f6">
+              <div class="store-eco-ic" style="background:#dbeafe;color:#3b82f6;"><i data-lucide="shopping-bag" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Your Orders</h5><p>Track purchases</p></div>
+            </div>
+            <div class="store-eco-card" data-color="#10b981">
+              <div class="store-eco-ic" style="background:#d1fae5;color:#10b981;"><i data-lucide="heart" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Wishlist</h5><p>Saved items</p></div>
+            </div>
+          </div>
+          <div class="store-eco-col store-eco-col-r">
+            <div class="store-eco-card" data-color="#d946ef">
+              <div class="store-eco-ic" style="background:#fce7f3;color:#d946ef;"><i data-lucide="download" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Downloads</h5><p>Your purchases</p></div>
+            </div>
+            <div class="store-eco-card" data-color="#f97316">
+              <div class="store-eco-ic" style="background:#fff7ed;color:#f97316;"><i data-lucide="headphones" class="ic-17"></i></div>
+              <div class="store-eco-tx"><h5>Support</h5><p>24/7 assistance</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div data-aos="fade-up" data-aos-delay="100">
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:36px 32px;box-shadow:0 4px 24px rgba(0,0,0,0.04);">
+            <div class="text-center mb-6">
+            <div class="d-flex-center" style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;margin:0 auto 12px;box-shadow:0 4px 12px rgba(37,99,235,0.25);">
+              <i data-lucide="log-in" class="ic-22"></i>
+            </div>
+            <h4 class="fw-8 mb-1">Sign In</h4>
+            <p class="fs-85 text-muted m-0">Access your account &amp; orders</p>
+          </div>
+
+          {% if form.non_field_errors %}
+          <div class="d-flex ai-center gap-10 fs-85" style="background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:12px 14px;margin-bottom:20px;color:#b91c1c;">
+            <i data-lucide="alert-circle" class="ic-16 flex-shrink-0"></i>{{ form.non_field_errors }}
+          </div>
+          {% endif %}
+
+          <form method="post" action="{% url 'account_login' %}" novalidate>
+            {% csrf_token %}
+            <div class="mb-4">
+              <label class="fw-6 fs-82 mb-2 d-block">Email</label>
+              <input type="email" name="login" value="{{ form.login.value|default:'' }}" required autocomplete="email" class="w-100 radius bg-alt fs-88 outline-none" style="padding:12px 14px;border:1.5px solid var(--border);transition:all 0.2s;">
+              {% if form.login.errors %}<div class="text-error fs-78 mt-1">{{ form.login.errors }}</div>{% endif %}
+            </div>
+            <div class="mb-2">
+              <label class="fw-6 fs-82 mb-2 d-block">Password</label>
+              <input type="password" name="password" required autocomplete="current-password" class="w-100 radius bg-alt fs-88 outline-none" style="padding:12px 14px;border:1.5px solid var(--border);transition:all 0.2s;">
+              {% if form.password.errors %}<div class="text-error fs-78 mt-1">{{ form.password.errors }}</div>{% endif %}
+            </div>
+            <div class="d-flex jc-between ai-center mb-5">
+              <label class="d-flex ai-center gap-6 fs-8 text-muted cursor-pointer">
+                <input type="checkbox" name="remember" class="accent-primary"> Remember me
+              </label>
+              <a href="{% url 'account_reset_password' %}" class="fs-8 text-muted">Forgot password?</a>
+            </div>
+
+            {% if redirect_field_value %}<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">{% endif %}
+            <button type="submit" class="hero-btn-primary w-100 d-flex-center">
+              <i data-lucide="log-in" class="ic-16"></i> Sign In
+            </button>
+          </form>
+
+          <div class="text-center mt-6">
+            <span class="fs-85 text-muted">Don't have an account?</span>
+            <a href="{% url 'account_signup' %}" class="fw-7" style="margin-left:4px;">Create one &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+.login-grid input:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  background: var(--bg) !important;
+}
+</style>
+{% endblock %}

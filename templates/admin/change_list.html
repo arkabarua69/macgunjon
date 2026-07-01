@@ -1,0 +1,284 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block title %}{% if cl.formset and cl.formset.errors %}Error: {% endif %}{{ block.super }}{% endblock %}
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/css/changelists.css' %}">
+{% if cl.formset %}
+<link rel="stylesheet" href="{% static 'admin/css/forms.css' %}">
+{% endif %}
+{% if cl.formset or action_form %}
+<script src="{% url 'admin:jsi18n' %}"></script>
+{% endif %}
+{{ media.css }}
+{% if not actions_on_top and not actions_on_bottom %}
+<style>
+  #changelist table thead th:first-child {
+    width: inherit
+  }
+</style>
+{% endif %}
+<link rel="stylesheet" href="{% static 'css/admin.css' %}?v=4">
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+{{ media.js }}
+<script src="{% static 'admin/js/filters.js' %}" defer></script>
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-list{% endblock %}
+
+{% if not is_popup %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}"><i class="fas fa-home breadcrumb-home-icon"></i> Home</a>
+  &rsaquo; <a href="{% url 'admin:app_list' app_label=cl.opts.app_label %}">{{ cl.opts.app_config.verbose_name }}</a>
+  &rsaquo; {{ cl.opts.verbose_name_plural|capfirst }}
+</div>
+{% endblock %}
+{% endif %}
+
+{% block content %}
+
+<div class="admin-hero">
+  <div class="admin-hero-top">
+    <div class="admin-hero-left">
+      <div class="admin-hero-icon">
+        <i
+          class="fas {% if opts.model_name == 'product' %}fa-box{% elif opts.model_name == 'order' %}fa-shopping-cart{% elif opts.model_name == 'user' %}fa-users{% elif opts.model_name == 'blogpost' %}fa-blog{% elif opts.model_name == 'category' %}fa-tags{% elif opts.model_name == 'coupon' %}fa-ticket{% elif opts.model_name == 'contactmessage' %}fa-envelope{% elif opts.model_name == 'review' %}fa-star{% elif opts.model_name == 'newsletter' %}fa-paper-plane{% else %}fa-list{% endif %}"></i>
+      </div>
+      <div>
+        <h1>{{ cl.opts.verbose_name_plural|capfirst }}</h1>
+        <p>Manage all {{ cl.opts.verbose_name_plural|lower }} in one place</p>
+      </div>
+    </div>
+    <div class="admin-hero-actions">
+      <a href="{% url cl.opts|admin_urlname:'add' %}" class="admin-hero-btn admin-hero-btn-primary"><i
+          class="fas fa-plus"></i> Add {{ cl.opts.verbose_name }}</a>
+    </div>
+  </div>
+  <div class="admin-hero-meta">
+    <a href="{% url 'admin:products_product_changelist' %}" class="admin-hero-eco"><i class="fas fa-box"></i>
+      Products</a>
+    <a href="{% url 'admin:orders_order_changelist' %}" class="admin-hero-eco"><i class="fas fa-shopping-cart"></i>
+      Orders</a>
+    <a href="{% url 'admin:users_user_changelist' %}" class="admin-hero-eco"><i class="fas fa-users"></i> Users</a>
+    <a href="{% url 'admin:blog_blogpost_changelist' %}" class="admin-hero-eco"><i class="fas fa-blog"></i> Blog</a>
+    <a href="{% url 'admin:products_category_changelist' %}" class="admin-hero-eco"><i class="fas fa-tags"></i>
+      Categories</a>
+    <a href="{% url 'admin:pages_contactmessage_changelist' %}" class="admin-hero-eco"><i class="fas fa-envelope"></i>
+      Contacts</a>
+  </div>
+</div>
+
+{% if cl.formset and cl.formset.errors %}
+<div class="errornote">
+  {% if cl.formset.total_error_count == 1 %}
+  Please correct the error below.
+  {% else %}
+  Please correct the errors below.
+  {% endif %}
+  {{ cl.formset.non_form_errors }}
+</div>
+{% endif %}
+
+<div class="two-col-layout">
+  <div class="two-col-main">
+    <div class="module" id="changelist">
+      <div class="changelist-form-container">
+        {% block search %}{% search_form cl %}{% endblock %}
+        {% block date_hierarchy %}{% if cl.date_hierarchy %}{% date_hierarchy cl %}{% endif %}{% endblock %}
+
+        <form id="changelist-form" method="post" {% if cl.formset and cl.formset.is_multipart %}
+          enctype="multipart/form-data" {% endif %} novalidate>{% csrf_token %}
+          {% if cl.formset %}
+          <div>{{ cl.formset.management_form }}</div>
+          {% endif %}
+
+          {% block result_list %}
+          {% if action_form and actions_on_top and cl.show_admin_actions %}{% admin_actions %}{% endif %}
+          {% result_list cl %}
+          {% if action_form and actions_on_bottom and cl.show_admin_actions %}{% admin_actions %}{% endif %}
+          {% endblock %}
+          <ul class="product-card-list" id="product-cards"></ul>
+          {% block pagination %}{% pagination cl %}{% endblock %}
+        </form>
+      </div>
+    </div>
+  </div>
+
+  {% block filters %}
+  {% if cl.has_filters %}
+  <nav id="changelist-filter" class="two-col-sidebar" aria-labelledby="changelist-filter-header">
+    <h2 id="changelist-filter-header">{% translate 'Filter' %}</h2>
+    {% for spec in cl.filter_specs %}{% admin_list_filter cl spec %}{% endfor %}
+  </nav>
+  {% endif %}
+  {% endblock %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+{% url cl.opts|admin_urlname:'changelist' as changelist_url %}
+<script>
+  (function () {
+    var MODEL = '{{ cl.opts.model_name }}';
+    var APP = '{{ cl.opts.app_label }}';
+    var _chRaw = '{% url cl.opts|admin_urlname:"change" 999999 %}';
+    var _delRaw = '{% url cl.opts|admin_urlname:"delete" 999999 %}';
+    var CHANGE_URL_TPL = _chRaw.replace('999999/change/', '');
+    var DELETE_URL_TPL = _delRaw.replace('999999/delete/', '');
+    var table = document.getElementById('result_list');
+    if (!table) return;
+
+    var THUMB_COLORS = ['#556ee6', '#51d28c', '#f1b44c', '#f46a6a', '#50a5f1', '#7c3aed'];
+    function getThumbColor(pk) { return THUMB_COLORS[parseInt(pk, 10) % THUMB_COLORS.length]; }
+
+    function getFieldVal(tr, field) {
+      var td = tr.querySelector('.field-' + field);
+      return td ? td.textContent.trim() : '';
+    }
+    function getFieldHtml(tr, field) {
+      var td = tr.querySelector('.field-' + field);
+      return td ? td.innerHTML.trim() : '';
+    }
+
+    function buildActions(pk) {
+      var editUrl = CHANGE_URL_TPL + pk + '/change/';
+      var deleteUrl = DELETE_URL_TPL + pk + '/delete/';
+      return '<div class="pc-actions"><div class="action-dropdown-wrap">' +
+        '<button class="action-btn" aria-label="Actions"><i class="fas fa-ellipsis-vertical"></i></button>' +
+        '<div class="action-dropdown">' +
+        '<a href="' + editUrl + '" class="action-dropdown-item action-edit"><i class="fas fa-pen"></i> Edit</a>' +
+        '<div class="action-dropdown-divider"></div>' +
+        '<a href="' + deleteUrl + '" class="action-dropdown-item action-delete"><i class="fas fa-trash"></i> Delete</a>' +
+        '</div></div></div>';
+    }
+
+    function buildCard(tr, pk) {
+      var cells = [];
+      tr.querySelectorAll('td').forEach(function (td) {
+        var cls = td.className;
+        if (cls.indexOf('field-') !== -1) {
+          cells.push({ field: cls.replace(/.*field-(\S+).*/, '$1'), text: td.textContent.trim(), html: td.innerHTML.trim() });
+        }
+      });
+      var primary = getFieldVal(tr, 'name') || '#';
+      var col = getThumbColor(pk);
+      var editUrl = CHANGE_URL_TPL + pk + '/change/';
+      var deleteUrl = DELETE_URL_TPL + pk + '/delete/';
+
+      var h = '<li class="product-card" data-pk="' + pk + '">';
+      h += '<div class="pc-check"><input type="checkbox" name="_selected_action" value="' + pk + '" class="action-select"></div>';
+      h += '<div class="pc-avatar" style="background:' + col + '15;color:' + col + '"><span>' + primary.charAt(0).toUpperCase() + '</span></div>';
+      h += '<div class="pc-body">';
+      h += '<div class="pc-title-row">';
+      h += '<a href="' + editUrl + '" title="' + primary + '">' + primary + '</a>';
+      h += '</div>';
+      if (cells.length > 1) h += '<div class="pc-meta-row"><span class="pc-category">' + getFieldVal(tr, 'category') + '</span></div>';
+      h += '</div>';
+      h += '<div class="pc-metrics">';
+      for (var i = 2; i < Math.min(cells.length, 6); i++) {
+        h += '<div class="pc-metric"><span class="pc-metric-val">' + cells[i].text + '</span><span class="pc-metric-lbl">' + cells[i].field.replace(/_/g, ' ') + '</span></div>';
+      }
+      h += '</div>';
+      h += '<div class="pc-end">';
+      h += '<div class="pc-actions-wrap">';
+      h += '<a href="' + editUrl + '" class="pc-action-btn pc-edit-btn" title="Edit"><i class="fas fa-pen"></i></a>';
+      h += '<a href="' + deleteUrl + '" class="pc-action-btn pc-delete-btn" title="Delete"><i class="fas fa-trash"></i></a>';
+      h += '</div>';
+      h += '</div>';
+      h += '</li>';
+      return h;
+    }
+
+    function syncCheckboxes(table, cards) {
+      cards.querySelectorAll('.action-select').forEach(function (cb) {
+        var target = table.querySelector('input[name="_selected_action"][value="' + cb.value + '"]');
+        if (target && cb.checked !== target.checked) {
+          cb.checked = target.checked;
+        }
+      });
+    }
+
+    function buildCards() {
+      var container = document.getElementById('product-cards');
+      if (!container) return;
+      var html = '';
+      table.querySelectorAll('tbody tr[data-object-pk]').forEach(function (tr) {
+        html += buildCard(tr, tr.getAttribute('data-object-pk'));
+      });
+      container.innerHTML = html;
+
+      container.querySelectorAll('.action-select').forEach(function (cb) {
+        cb.addEventListener('change', function () {
+          var target = table.querySelector('input[name="_selected_action"][value="' + this.value + '"]');
+          if (target) { target.checked = this.checked; }
+        });
+      });
+
+      // Listen for table checkbox changes to sync cards
+      var tableCbs = table.querySelectorAll('input[name="_selected_action"]');
+      if (tableCbs.length) {
+        tableCbs.forEach(function (tcb) {
+          tcb.addEventListener('change', function () {
+            var cardCb = container.querySelector('input[name="_selected_action"][value="' + this.value + '"]');
+            if (cardCb) cardCb.checked = this.checked;
+          });
+        });
+      }
+
+      function applyViewMode() {
+        var toggle = document.getElementById('card-list-toggle');
+        var checked = toggle ? toggle.checked : true;
+        table.classList.toggle('table-view', !checked);
+        container.style.display = checked ? '' : 'none';
+      }
+
+      var toggle = document.getElementById('card-list-toggle');
+      if (toggle) {
+        toggle.addEventListener('change', function () {
+          applyViewMode();
+          // Clear all checkboxes on toggle
+          container.querySelectorAll('.action-select').forEach(function (cb) {
+            cb.checked = false;
+            var target = table.querySelector('input[name="_selected_action"][value="' + cb.value + '"]');
+            if (target) target.checked = false;
+          });
+        });
+      }
+
+      applyViewMode();
+
+      container.querySelectorAll('.action-btn').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var dd = btn.closest('.action-dropdown-wrap').querySelector('.action-dropdown');
+          var open = document.querySelector('.action-dropdown.show');
+          if (open && open !== dd) open.classList.remove('show');
+          dd.classList.toggle('show');
+        });
+      });
+    }
+
+    document.addEventListener('click', function () {
+      document.querySelectorAll('.action-dropdown.show').forEach(function (d) { d.classList.remove('show'); });
+    });
+
+    // Use MutationObserver on tbody to sync card checkboxes when table changes
+    var tbody = table.querySelector('tbody');
+    if (tbody) {
+      var obs = new MutationObserver(function () {
+        var cards = document.getElementById('product-cards');
+        if (cards) syncCheckboxes(table, cards);
+      });
+      obs.observe(tbody, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+    }
+
+    buildCards();
+  })();
+</script>
+{% endblock %}

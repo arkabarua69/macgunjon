@@ -1,0 +1,118 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en-us' }}" dir="{{ LANGUAGE_BIDI|yesno:'rtl,ltr,ltr' }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ title }} | Mac GunJon Admin{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+  {% block extrahead %}{% endblock %}
+  {% block blockbots %}{% endblock %}
+</head>
+<body class="{% if is_popup %}popup{% endif %} {% block bodyclass %}{% endblock %}">
+
+  <nav class="admin-nav">
+    <div class="admin-nav-inner">
+      <div class="admin-nav-left">
+        <a href="{% url 'admin:index' %}" class="admin-nav-brand">
+          <i class="fas fa-robot"></i><span>Mac GunJon</span>
+        </a>
+        <button class="admin-nav-hamburger" id="adminNavToggle" aria-label="Toggle navigation">
+          <i class="fas fa-bars"></i>
+        </button>
+      <div class="admin-nav-links" id="adminNavLinks">
+          {% url 'admin:index' as admin_index %}
+          {% url 'admin:products_product_changelist' as products_url %}
+          {% url 'admin:orders_order_changelist' as orders_url %}
+          {% url 'admin:users_user_changelist' as users_url %}
+          {% url 'admin:blog_blogpost_changelist' as blog_url %}
+          {% url 'admin:products_category_changelist' as categories_url %}
+          <a href="{{ admin_index }}" class="admin-nav-link {% if request.path == admin_index %}active{% endif %}"><i class="fas fa-th-large"></i> Dashboard</a>
+          <a href="{{ products_url }}" class="admin-nav-link {% if request.path|slice:':19' == '/admin/products/prod' or request.path|slice:':17' == '/admin/products/cat' %}active{% endif %}"><i class="fas fa-box"></i> Products</a>
+          <a href="{{ orders_url }}" class="admin-nav-link {% if request.path|slice:':14' == '/admin/orders/' %}active{% endif %}"><i class="fas fa-shopping-cart"></i> Orders</a>
+          <a href="{{ users_url }}" class="admin-nav-link {% if request.path|slice:':13' == '/admin/users/' %}active{% endif %}"><i class="fas fa-users"></i> Users</a>
+          <a href="{{ blog_url }}" class="admin-nav-link {% if request.path|slice:':11' == '/admin/blog/' %}active{% endif %}"><i class="fas fa-blog"></i> Blog</a>
+          <a href="{{ categories_url }}" class="admin-nav-link {% if request.path|slice:':21' == '/admin/products/categor' %}active{% endif %}"><i class="fas fa-tags"></i> Categories</a>
+        </div>
+      </div>
+      <div class="admin-nav-right">
+        <a href="{% url 'admin:password_change' %}" class="admin-nav-btn admin-nav-btn-outline" title="Change Password"><i class="fas fa-key"></i><span>Change Password</span></a>
+        <a href="/" target="_blank" class="admin-nav-btn admin-nav-btn-outline" title="View Site"><i class="fas fa-external-link-alt"></i><span>View Site</span></a>
+        <div class="admin-nav-user">
+          {% if user.avatar and user.avatar.url %}
+            <div class="admin-nav-avatar admin-nav-avatar--img"><img src="{{ user.avatar.url }}" alt="{{ user.get_short_name|default:user.username }}"></div>
+          {% else %}
+            <div class="admin-nav-avatar"><i class="fas fa-user-shield"></i></div>
+          {% endif %}
+          <span class="admin-nav-username">{{ user.get_short_name|default:user.username }}</span>
+        </div>
+        <form method="post" action="{% url 'admin:logout' %}" class="admin-nav-logout-form">
+          {% csrf_token %}
+          <button type="submit" class="admin-nav-btn admin-nav-btn-danger" title="Log out"><i class="fas fa-sign-out-alt"></i><span>Log out</span></button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  {% if messages %}
+  <div class="admin-messages">
+    {% for message in messages %}
+    <div class="admin-msg admin-msg-{{ message.tags }}">
+      <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %}"></i>
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div id="container">
+    <div id="content">
+      <div id="content-main">
+        {% block content %}{% endblock %}
+      </div>
+    </div>
+    {% block sidebar %}{% endblock %}
+  </div>
+
+  <footer class="admin-footer">
+    <span>&copy; {{ "now"|date:"Y" }} Mac GunJon. All rights reserved.</span>
+    <span>Powered by Django</span>
+  </footer>
+
+  <script src="{% static 'admin/js/core.js' %}"></script>
+  <script src="{% static 'admin/js/jquery.init.js' %}"></script>
+  <script src="{% static 'admin/js/admin/RelatedObjectLookups.js' %}"></script>
+  <script src="{% static 'admin/js/actions.js' %}"></script>
+  <script src="{% static 'admin/js/urlify.js' %}"></script>
+  <script src="{% static 'admin/js/prepopulate.js' %}"></script>
+  <script src="{% static 'admin/js/inlines.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+  <script>
+    (function() {
+      var toggle = document.getElementById('adminNavToggle');
+      var links = document.getElementById('adminNavLinks');
+      if (toggle && links) {
+        toggle.addEventListener('click', function() {
+          links.classList.toggle('show');
+          var icon = toggle.querySelector('i');
+          if (links.classList.contains('show')) {
+            icon.className = 'fas fa-times';
+          } else {
+            icon.className = 'fas fa-bars';
+          }
+        });
+        document.addEventListener('click', function(e) {
+          if (!toggle.contains(e.target) && !links.contains(e.target)) {
+            links.classList.remove('show');
+            toggle.querySelector('i').className = 'fas fa-bars';
+          }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+{% load admin_urls %}
+<div class="pl-row">
+  <div class="pl-row-check">
+    <input type="checkbox" name="_selected_action" value="{{ product.pk }}">
+  </div>
+  <div class="pl-avatar" style="--pl-bg:{{ avatar_bg }};--pl-cl:{{ avatar_cl }};">
+    {% if product.image %}
+      <img src="{{ product.image.url }}" alt="{{ product.name }}">
+    {% else %}
+      {{ product.name|truncatechars:1 }}
+    {% endif %}
+  </div>
+  <div class="pl-row-info">
+    <a href="{{ list_url }}{{ product.pk }}/change/" class="pl-row-title">{{ product.name }}</a>
+    <span class="pl-row-sub">{{ product.category.name }}</span>
+  </div>
+  <div class="pl-row-stats">
+    <div class="pl-row-stat">
+      <span class="pl-row-stat-val">{{ product.stock|default:"unlimited" }}</span>
+      <span class="pl-row-stat-lbl">STOCK</span>
+    </div>
+    <div class="pl-row-stat">
+      <span class="pl-row-stat-val">${{ product.price_usd|floatformat:2 }}</span>
+      <span class="pl-row-stat-lbl">PRICE USD</span>
+    </div>
+    <div class="pl-row-stat">
+      <span class="pl-row-stat-val">{{ product.order_count_ann|default:"0" }}</span>
+      <span class="pl-row-stat-lbl">ORDER COUNT</span>
+    </div>
+    <div class="pl-row-stat">
+      <span class="pl-row-stat-val">
+        {% if product.avg_rating_ann %}
+          {{ product.avg_rating_ann|floatformat:1 }}
+        {% else %}
+          0
+        {% endif %}
+      </span>
+      <span class="pl-row-stat-lbl">RATING DISPLAY</span>
+    </div>
+  </div>
+  <div class="pl-row-actions">
+    <a href="{{ list_url }}{{ product.pk }}/change/" class="pl-action-btn pl-edit-btn"><i class="fas fa-pen-to-square"></i></a>
+    <a href="{{ list_url }}{{ product.pk }}/delete/" class="pl-action-btn pl-delete-btn"><i class="fas fa-trash"></i></a>
+  </div>
+</div>

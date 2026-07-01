@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Active Sessions — Mac GunJon{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="dash-hero">
+  <canvas id="canvas-particles"></canvas>
+  <div class="container">
+    <div class="dash-hero-inner">
+      <div>
+        <div class="dash-hero-badge" data-aos="fade-up">
+          <i data-lucide="monitor"></i>
+          Active Sessions
+        </div>
+        <h1 class="dash-hero-title" data-aos="fade-up" data-aos-delay="100">
+          Your <span class="dash-grad">Sessions</span>
+        </h1>
+        <p class="dash-hero-desc" data-aos="fade-up" data-aos-delay="200">
+          Review and manage devices logged into your account.
+        </p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="150">
+        <div class="dash-hero-stats">
+          <div class="dash-hero-col">
+            <div class="dash-hero-stat">
+              <div class="dash-hero-stat-icon" style="background:#dbeafe;color:#3b82f6;">
+                <i data-lucide="monitor"></i>
+              </div>
+              <div class="dash-hero-stat-text">
+                <h5>{{ sessions|length }} Session{{ sessions|length|pluralize }}</h5>
+                <p>Active logins</p>
+              </div>
+            </div>
+            <div class="dash-hero-stat">
+              <div class="dash-hero-stat-icon" style="background:#d1fae5;color:#10b981;">
+                <i data-lucide="shield-check"></i>
+              </div>
+              <div class="dash-hero-stat-text">
+                <h5>Secure</h5>
+                <p>All sessions encrypted</p>
+              </div>
+            </div>
+          </div>
+          <div class="dash-hero-col dash-hero-col-r">
+            <div class="dash-hero-stat">
+              <div class="dash-hero-stat-icon" style="background:#fce7f3;color:#d946ef;">
+                <i data-lucide="smartphone"></i>
+              </div>
+              <div class="dash-hero-stat-text">
+                <h5>Cross-Device</h5>
+                <p>Access anywhere</p>
+              </div>
+            </div>
+            <div class="dash-hero-stat">
+              <div class="dash-hero-stat-icon" style="background:#fff7ed;color:#f97316;">
+                <i data-lucide="log-out"></i>
+              </div>
+              <div class="dash-hero-stat-text">
+                <h5>Revoke</h5>
+                <p>Remove access</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="dash-section">
+  <div class="container">
+    <div class="dash-layout">
+
+      <aside class="dash-sidebar" data-aos="fade-right">
+        <div class="dash-sidebar-user">
+          <div class="dash-avatar">
+            {% if user.avatar %}
+              <img src="{{ user.avatar.url }}" alt="{{ user.username }}">
+            {% else %}
+              {{ user.username|first|upper }}
+            {% endif %}
+          </div>
+          <div class="dash-user-meta">
+            <h6>{{ user.username }}</h6>
+            <span>{{ user.email|truncatechars:28 }}</span>
+          </div>
+        </div>
+
+        <nav class="dash-nav">
+          <a href="{% url 'users:dashboard' %}" class="dash-nav-link">
+            <i data-lucide="layout-dashboard"></i> Dashboard
+          </a>
+          <a href="{% url 'users:profile_edit' %}" class="dash-nav-link">
+            <i data-lucide="settings"></i> Edit Profile
+          </a>
+          <a href="{% url 'users:address_list' %}" class="dash-nav-link">
+            <i data-lucide="map-pin"></i> Addresses
+            {% if address_count %}<span class="dash-badge dash-badge-blue">{{ address_count }}</span>{% endif %}
+          </a>
+          <a href="{% url 'users:session_list' %}" class="dash-nav-link active">
+            <i data-lucide="monitor"></i> Sessions
+            {% if session_count %}<span class="dash-badge dash-badge-amber">{{ session_count }}</span>{% endif %}
+          </a>
+          <a href="{% url 'products:wishlist' %}" class="dash-nav-link">
+            <i data-lucide="heart"></i> Wishlist
+            {% if wishlist_count %}<span class="dash-badge dash-badge-pink">{{ wishlist_count }}</span>{% endif %}
+          </a>
+        </nav>
+
+        <div class="dash-nav-divider"></div>
+
+        <nav class="dash-nav">
+          <a href="{% url 'users:password_reset' %}" class="dash-nav-link">
+            <i data-lucide="key"></i> Change Password
+          </a>
+          <form method="post" action="{% url 'users:logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="dash-nav-link dash-nav-danger">
+              <i data-lucide="log-out"></i> Logout
+            </button>
+          </form>
+        </nav>
+      </aside>
+
+      <main class="dash-main">
+
+        <div class="dash-card" data-aos="fade-up">
+          <div class="dash-card-header">
+            <div class="dash-card-icon" style="background:#fef3c7;color:#d97706;"><i data-lucide="monitor"></i></div>
+            <div class="dash-card-meta">
+              <h5>Active Sessions</h5>
+              <p>{{ sessions|length }} device{{ sessions|length|pluralize }} currently logged in</p>
+            </div>
+          </div>
+           <div class="dash-card-body p-0">
+            {% if sessions %}
+            <div class="overflow-hidden">
+              <table class="w-100" style="border-collapse:collapse;">
+                <thead>
+                  <tr style="border-bottom:1px solid #e2e8f0;">
+                    <th class="fs-72 fw-7 ls-1 text-left table-th-cell">IP Address</th>
+                    <th class="fs-72 fw-7 ls-1 text-left table-th-cell">Device / Browser</th>
+                    <th class="fs-72 fw-7 ls-1 text-left table-th-cell">Last Active</th>
+                    <th class="fs-72 fw-7 ls-1 text-right table-th-cell">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for session in sessions %}
+                  <tr style="border-bottom:1px solid #f1f5f9;transition:background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+                    <td class="fs-82 fw-5" style="padding:0.85rem 1.25rem;color:#0f172a;">{{ session.ip_address|default:"Unknown" }}</td>
+                    <td class="fs-82 table-td-cell">{{ session.user_agent|truncatechars:50|default:"Unknown" }}</td>
+                    <td class="fs-82 table-td-cell">{{ session.last_active|timesince }} ago</td>
+                    <td style="padding:0.85rem 1.25rem;text-align:right;">
+                      <a href="{% url 'users:session_revoke' session.id %}"
+                         class="btn btn-outline-danger btn-sm fw-bold"
+                         onclick="return confirm('Revoke this session?')">
+                        <i data-lucide="ban" style="width:12px;height:12px;vertical-align:middle;margin-right:2px;"></i>Revoke
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            {% else %}
+            <div class="dash-empty" style="padding:2.5rem 1.5rem;">
+              <i data-lucide="monitor-off"></i>
+              <h5>No active sessions</h5>
+              <p>Other sessions will appear here when you log in from another device.</p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
