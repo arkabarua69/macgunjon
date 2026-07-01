@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      SECRET_KEY: ci-test-secret-key-not-for-production
+      SECRET_KEY: 37i$3+kmsm7u-&*n5=8xahi%wtbyp^@jgcnqy4=)1$y(#mt&$g
       DEBUG: 'True'
       DB_ENGINE: django.db.backends.postgresql
       DB_NAME: macgunjon
